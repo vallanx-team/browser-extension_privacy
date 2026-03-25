@@ -143,7 +143,13 @@ function updateProxyStatus(enabled) {
 function bindSettingsEvents() {
   const bind = (id, key, type = 'checkbox') => {
     const el = document.getElementById(id);
-    el.addEventListener('change', () => setSetting(key, type === 'checkbox' ? el.checked : el.value));
+    el.addEventListener('change', () => {
+      let val;
+      if (type === 'checkbox') val = el.checked;
+      else if (type === 'number') val = parseFloat(el.value.replace(',', '.'));
+      else val = el.value;
+      setSetting(key, val);
+    });
   };
 
   bind('setting-theme', 'theme', 'select');

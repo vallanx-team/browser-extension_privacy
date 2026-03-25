@@ -83,27 +83,39 @@ function fingerprintOverrides() {
   }
 
   if (s.geolocationSpoofEnabled) {
-    injectScript(`
-      const _origGeo = navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);
-      navigator.geolocation.getCurrentPosition = function(success, error, options) {
-        success({
-          coords: {
-            latitude:         ${s.geolocationLat},
-            longitude:        ${s.geolocationLon},
-            accuracy:         10,
-            altitude:         null,
-            altitudeAccuracy: null,
-            heading:          null,
-            speed:            null
-          },
-          timestamp: Date.now()
-        });
-      };
-      navigator.geolocation.watchPosition = function(success, error, options) {
-        navigator.geolocation.getCurrentPosition(success, error, options);
-        return 0;
-      };
-    `);
+    const lat = parseFloat(String(s.geolocationLat).replace(',', '.'));
+    const lon = parseFloat(String(s.geolocationLon).replace(',', '.'));
+    if (!isNaN(lat) && !isNaN(lon)) {
+      injectScript(`
+        (function() {
+          const _lat = ${lat};
+          const _lon = ${lon};
+          const fakePos = function(success) {
+            success({
+              coords: {
+                latitude:         _lat,
+                longitude:        _lon,
+                accuracy:         10,
+                altitude:         null,
+                altitudeAccuracy: null,
+                heading:          null,
+                speed:            null
+              },
+              timestamp: Date.now()
+            });
+          };
+          try {
+            Object.defineProperty(navigator.geolocation, 'getCurrentPosition',
+              { value: fakePos, configurable: true, writable: true });
+            Object.defineProperty(navigator.geolocation, 'watchPosition',
+              { value: function(success) { fakePos(success); return 0; }, configurable: true, writable: true });
+          } catch(_) {
+            navigator.geolocation.getCurrentPosition = fakePos;
+            navigator.geolocation.watchPosition = function(success) { fakePos(success); return 0; };
+          }
+        })();
+      `);
+    }
   }
 })();
 
