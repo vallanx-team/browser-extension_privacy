@@ -222,3 +222,5 @@ composer.lock
 
 *.md
 !Readme.md
+# Git worktrees
+.worktrees/
