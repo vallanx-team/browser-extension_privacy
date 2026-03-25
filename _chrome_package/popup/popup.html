@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Vallanx Privacy Shield</title>
+  <link rel="stylesheet" href="../resources/css/styles.css">
+  <style>
+    body { width: 320px; padding: 16px; }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .header img { width: 32px; height: 32px; }
+    .header h1 { font-size: 15px; font-weight: 600; color: var(--accent); }
+    .quick-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .stat-box { background: var(--surface); border-radius: 8px; padding: 10px; text-align: center; border: 1px solid var(--border); }
+    .stat-value { font-size: 18px; font-weight: 700; color: var(--accent-2); }
+    .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .actions { display: flex; flex-direction: column; gap: 8px; }
+    .open-dashboard { text-align: center; margin-top: 12px; }
+    a.link { color: var(--accent-2); text-decoration: none; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="../icons/icon48.png" alt="Logo">
+    <h1 id="ext-name">Vallanx Privacy Shield</h1>
+    <span class="status-dot green" id="status-dot" title="Aktiv"></span>
+  </div>
+
+  <div class="quick-stats">
+    <div class="stat-box">
+      <div class="stat-value" id="stat-blocked">0</div>
+      <div class="stat-label" data-i18n="statsBlocked">Geblockt</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="stat-mb">0</div>
+      <div class="stat-label" data-i18n="statsMb">MB</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="stat-time">0 s</div>
+      <div class="stat-label" data-i18n="statsTime">Zeit</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <div class="toggle">
+      <span data-i18n="fingerprintLabel">Anti-Fingerprinting</span>
+      <input type="checkbox" id="toggle-fingerprint">
+    </div>
+    <div class="toggle">
+      <span data-i18n="dntLabel">Do Not Track</span>
+      <input type="checkbox" id="toggle-dnt">
+    </div>
+    <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px;padding:0 2px" id="site-label"></div>
+    <div class="toggle" id="site-js-row">
+      <span>JS blockieren</span>
+      <input type="checkbox" id="toggle-site-js">
+    </div>
+    <div class="toggle" id="site-popups-row">
+      <span>Pop-ups blockieren</span>
+      <input type="checkbox" id="toggle-site-popups">
+    </div>
+    <button class="btn btn-danger" id="btn-report" style="font-size:12px;">
+      ⚠ <span data-i18n="reportSuspicious">Verdächtige Website melden</span>
+    </button>
+  </div>
+
+  <div class="open-dashboard">
+    <a href="#" class="link" id="btn-dashboard">⚙ Dashboard öffnen</a>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

@@ -222,5 +222,12 @@ composer.lock
 
 *.md
 !Readme.md
+!_chrome_package/README.md
+
 # Git worktrees
 .worktrees/
+
+# Chrome extension build artifacts
+_chrome_package/node_modules/
+_chrome_package/package-lock.json
+_chrome_package.crx
