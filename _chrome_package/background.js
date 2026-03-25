@@ -73,6 +73,7 @@ async function rebuildBlockingRules() {
 
   for (const list of settings.blocklists) {
     if (!list.enabled) continue;
+    if (list.type === 'parental' && !settings.parentalEnabled) continue;
     const parsed = parseUBS(list.text || '');
 
     for (const rule of parsed) {
@@ -237,7 +238,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.storage.onChanged.addListener(async (changes) => {
   const privacyKeys = ['dntEnabled', 'userAgentEnabled', 'userAgentString', 'ipHeaderEnabled', 'ipHeaderValue'];
   if (privacyKeys.some(k => k in changes)) await initPrivacyHeaders();
-  if ('blocklists' in changes) await rebuildBlockingRules();
+  if ('blocklists' in changes || 'parentalEnabled' in changes) await rebuildBlockingRules();
   if (['proxyEnabled', 'proxyHost', 'proxyPort'].some(k => k in changes)) await applyProxy();
 });
 

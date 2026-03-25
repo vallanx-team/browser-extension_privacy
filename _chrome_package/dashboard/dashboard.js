@@ -1,6 +1,15 @@
 import { getSettings, setSetting, getStats } from '../resources/js/storage.js';
 import { formatMb, formatMs } from '../resources/js/stats.js';
 
+// ─── Parental Controls — Session State ───────────────────────────────────────
+let parentalUnlocked = false;
+
+async function hashPassword(password) {
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(password));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // ─── Tab Navigation ──────────────────────────────────────────────────────────
 
 document.querySelectorAll('.tab').forEach(tab => {
@@ -83,6 +92,38 @@ async function loadSettings(s) {
   document.getElementById('s-proxy-user').value = s.proxyUsername;
   document.getElementById('s-proxy-pass').value = s.proxyPassword;
   updateProxyStatus(s.proxyEnabled);
+
+  showParentalSection(s);
+}
+
+function showParentalSection(s) {
+  const setup    = document.getElementById('parental-setup');
+  const locked   = document.getElementById('parental-locked');
+  const unlocked = document.getElementById('parental-unlocked');
+  const statusEl = document.getElementById('parental-status-text');
+
+  if (!s.parentalPasswordHash) {
+    setup.style.display    = '';
+    locked.style.display   = 'none';
+    unlocked.style.display = 'none';
+    statusEl.textContent   = 'Nicht eingerichtet';
+    statusEl.style.color   = 'var(--text-muted)';
+  } else if (!parentalUnlocked) {
+    setup.style.display    = 'none';
+    locked.style.display   = '';
+    unlocked.style.display = 'none';
+    statusEl.textContent   = s.parentalEnabled ? 'Aktiv 🔒' : 'Eingerichtet, deaktiviert 🔒';
+    statusEl.style.color   = s.parentalEnabled ? 'var(--color-main-green)' : 'var(--text-muted)';
+  } else {
+    setup.style.display    = 'none';
+    locked.style.display   = 'none';
+    unlocked.style.display = '';
+    statusEl.textContent   = s.parentalEnabled ? 'Aktiv 🔓' : 'Deaktiviert 🔓';
+    statusEl.style.color   = s.parentalEnabled ? 'var(--color-main-green)' : 'var(--text-muted)';
+    document.getElementById('s-parental-enabled').checked = s.parentalEnabled;
+    document.getElementById('s-parental-start').value     = s.parentalStartHour;
+    document.getElementById('s-parental-end').value       = s.parentalEndHour;
+  }
 }
 
 function updateProxyStatus(enabled) {
@@ -122,6 +163,8 @@ function bindSettingsEvents() {
   bind('s-hyperlink', 'disableHyperlinkAudit');
   bind('s-low-bandwidth', 'lowBandwidth');
 
+  bindParentalEvents();
+
   document.getElementById('s-proxy-toggle').addEventListener('click', async () => {
     const s = await getSettings();
     const proxyHost = document.getElementById('s-proxy-host').value.trim();
@@ -133,6 +176,76 @@ function bindSettingsEvents() {
     await setSetting('proxyUsername', document.getElementById('s-proxy-user').value.trim());
     await setSetting('proxyPassword', document.getElementById('s-proxy-pass').value.trim());
     updateProxyStatus(enabled);
+  });
+}
+
+function bindParentalEvents() {
+  // Erstes Einrichten: Passwort setzen
+  document.getElementById('btn-parental-setup').addEventListener('click', async () => {
+    const p1  = document.getElementById('s-parental-pass1').value;
+    const p2  = document.getElementById('s-parental-pass2').value;
+    const msg = document.getElementById('parental-setup-msg');
+    msg.style.display = '';
+    if (!p1) {
+      msg.textContent = 'Bitte ein Passwort eingeben.';
+      msg.style.color = 'var(--danger)';
+      return;
+    }
+    if (p1 !== p2) {
+      msg.textContent = 'Passwörter stimmen nicht überein.';
+      msg.style.color = 'var(--danger)';
+      return;
+    }
+    await setSetting('parentalPasswordHash', await hashPassword(p1));
+    document.getElementById('s-parental-pass1').value = '';
+    document.getElementById('s-parental-pass2').value = '';
+    parentalUnlocked = true;
+    showParentalSection(await getSettings());
+  });
+
+  // Entsperren
+  document.getElementById('btn-parental-unlock').addEventListener('click', async () => {
+    const pw  = document.getElementById('s-parental-unlock').value;
+    const msg = document.getElementById('parental-unlock-msg');
+    const s   = await getSettings();
+    if (await hashPassword(pw) !== s.parentalPasswordHash) {
+      msg.style.display = '';
+      return;
+    }
+    msg.style.display = 'none';
+    document.getElementById('s-parental-unlock').value = '';
+    parentalUnlocked = true;
+    showParentalSection(s);
+  });
+
+  // Sperren
+  document.getElementById('btn-parental-lock').addEventListener('click', async () => {
+    parentalUnlocked = false;
+    showParentalSection(await getSettings());
+  });
+
+  // Einstellungen speichern
+  document.getElementById('btn-parental-save').addEventListener('click', async () => {
+    await setSetting('parentalEnabled',   document.getElementById('s-parental-enabled').checked);
+    await setSetting('parentalStartHour', parseInt(document.getElementById('s-parental-start').value));
+    await setSetting('parentalEndHour',   parseInt(document.getElementById('s-parental-end').value));
+    const newPass = document.getElementById('s-parental-new-pass').value;
+    if (newPass) {
+      await setSetting('parentalPasswordHash', await hashPassword(newPass));
+      document.getElementById('s-parental-new-pass').value = '';
+    }
+    showParentalSection(await getSettings());
+  });
+
+  // Kinderschutz vollständig entfernen
+  document.getElementById('btn-parental-remove').addEventListener('click', async () => {
+    if (!confirm('Kinderschutz wirklich deaktivieren und Passwort entfernen?')) return;
+    await setSetting('parentalEnabled',      false);
+    await setSetting('parentalPasswordHash', '');
+    await setSetting('parentalStartHour',    8);
+    await setSetting('parentalEndHour',      20);
+    parentalUnlocked = false;
+    showParentalSection(await getSettings());
   });
 }
 
@@ -173,6 +286,7 @@ async function renderFilterLists() {
       <div>
         <strong>${list.name}</strong>
         <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${list.type}</span>
+        ${list.type === 'parental' ? '<span style="font-size:10px;color:var(--accent-2);margin-left:6px">nur aktiv bei Kinderschutz</span>' : ''}
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <input type="checkbox" ${list.enabled ? 'checked' : ''} data-id="${list.id}">
