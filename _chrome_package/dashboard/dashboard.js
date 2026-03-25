@@ -342,6 +342,45 @@ function bindFilterEvents() {
     document.getElementById('filter-file-name').textContent = file.name;
     document.getElementById('filter-text').value = await file.text();
   });
+
+  // ── Kinderschutz-Filterliste ──────────────────────────────────────────────
+
+  document.getElementById('btn-parental-add-list').addEventListener('click', async () => {
+    const url  = document.getElementById('parental-filter-url').value.trim();
+    const text = document.getElementById('parental-filter-text').value.trim();
+    if (!url && !text) return;
+
+    let listText = text;
+    if (url) {
+      const resp = await fetch(url);
+      listText = await resp.text();
+    }
+
+    const settings = await getSettings();
+    settings.blocklists.push({
+      id: crypto.randomUUID(),
+      name: url ? new URL(url).hostname : 'Kinderschutzliste',
+      type: 'parental',
+      url,
+      text: listText,
+      enabled: true
+    });
+    await setSetting('blocklists', settings.blocklists);
+    document.getElementById('parental-filter-url').value  = '';
+    document.getElementById('parental-filter-text').value = '';
+    document.getElementById('parental-filter-file-name').textContent = '';
+    renderFilterLists();
+  });
+
+  document.getElementById('btn-parental-load-file').addEventListener('click', () =>
+    document.getElementById('parental-filter-file').click());
+
+  document.getElementById('parental-filter-file').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('parental-filter-file-name').textContent = file.name;
+    document.getElementById('parental-filter-text').value = await file.text();
+  });
 }
 
 init();
