@@ -1,286 +1,294 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <title>Vallanx Privacy Shield — Dashboard</title>
-  <link rel="stylesheet" href="../resources/css/styles.css">
-  <style>
-    body { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
-    .header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
-    .header img { height: 40px; }
-    .header h1 { font-size: 20px; font-weight: 700; color: var(--accent); }
-    .tab-content { display: none; padding-top: 20px; }
-    .tab-content.active { display: block; }
-    section { margin-bottom: 20px; }
-    section h2 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;
-      letter-spacing: 0.05em; margin-bottom: 12px; }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <img src="../icons/icon48.png" alt="Vallanx">
-    <h1>Vallanx Privacy Shield</h1>
-  </div>
+	<meta charset="utf-8">
+	<title>Vallanx Privacy Shield — Dashboard</title>
+	<link rel="stylesheet" href="../resources/css/styles.css">
+	<style>
+		body { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+		.header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+		.header img { height: 40px; }
+		.header h1 { font-size: 20px; font-weight: 700; color: var(--accent); }
+		.tab-content { display: none; padding-top: 20px; }
+		.tab-content.active { display: block; }
+		section { margin-bottom: 20px; }
+		section h2 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;
+			letter-spacing: 0.05em; margin-bottom: 12px; }
+		</style>
+	</head>
+	<body>
+		<div class="header">
+			<img src="../icons/icon48.png" alt="Vallanx">
+			<h1>Vallanx Privacy Shield</h1>
+		</div>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab active" data-tab="statistics" data-i18n="tabStatistics">Statistiken</button>
-    <button class="tab" data-tab="settings"   data-i18n="tabSettings">Einstellungen</button>
-    <button class="tab" data-tab="filter"     data-i18n="tabFilter">Filter</button>
-    <button class="tab" data-tab="about"      data-i18n="tabAbout">Über Vallanx</button>
-  </nav>
+		<nav class="tabs" role="tablist">
+			<button class="tab active" data-tab="statistics" data-i18n="tabStatistics">Statistiken</button>
+			<button class="tab" data-tab="settings"   data-i18n="tabSettings">Einstellungen</button>
+			<button class="tab" data-tab="filter"     data-i18n="tabFilter">Filter</button>
+			<button class="tab" data-tab="about"      data-i18n="tabAbout">Über Vallanx</button>
+		</nav>
 
-  <!-- Tab: Statistiken -->
-  <div class="tab-content active" id="tab-statistics">
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px">
-      <div class="card" style="text-align:center">
-        <div style="font-size:36px;font-weight:800;color:var(--accent-2)" id="stat-blocked-big">0</div>
-        <div style="color:var(--text-muted);font-size:13px" data-i18n="statsBlocked">Blockierte Seiten</div>
-      </div>
-      <div class="card" style="text-align:center">
-        <div style="font-size:36px;font-weight:800;color:var(--color-main-green)" id="stat-mb-big">0 MB</div>
-        <div style="color:var(--text-muted);font-size:13px" data-i18n="statsMb">Blockierte MB</div>
-      </div>
-      <div class="card" style="text-align:center">
-        <div style="font-size:36px;font-weight:800;color:var(--color-yellow)" id="stat-time-big">0 s</div>
-        <div style="color:var(--text-muted);font-size:13px" data-i18n="statsTime">Gesparte Ladezeit</div>
-      </div>
-    </div>
-    <div class="card">
-      <h2>Netzwerk-Protokoll</h2>
-      <div id="network-log" style="font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;"></div>
-    </div>
-  </div>
+		<!-- Tab: Statistiken -->
+		<div class="tab-content active" id="tab-statistics">
+			<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px">
+				<div class="card" style="text-align:center">
+					<div style="font-size:36px;font-weight:800;color:var(--accent-2)" id="stat-blocked-big">0</div>
+					<div style="color:var(--text-muted);font-size:13px" data-i18n="statsBlocked">Blockierte Seiten</div>
+				</div>
+				<div class="card" style="text-align:center">
+					<div style="font-size:36px;font-weight:800;color:var(--color-main-green)" id="stat-mb-big">0 MB</div>
+					<div style="color:var(--text-muted);font-size:13px" data-i18n="statsMb">Blockierte MB</div>
+				</div>
+				<div class="card" style="text-align:center">
+					<div style="font-size:36px;font-weight:800;color:var(--color-yellow)" id="stat-time-big">0 s</div>
+					<div style="color:var(--text-muted);font-size:13px" data-i18n="statsTime">Gesparte Ladezeit</div>
+				</div>
+			</div>
+			<div class="card">
+				<h2>Netzwerk-Protokoll</h2>
+				<div id="network-log" style="font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;"></div>
+			</div>
+		</div>
 
-  <!-- Tab: Einstellungen -->
-  <div class="tab-content" id="tab-settings">
-    <section>
-      <h2>Erscheinungsbild</h2>
-      <div class="card">
-        <div class="toggle">
-          <label data-i18n="settingDarkMode">Dark Mode</label>
-          <select id="setting-theme" style="width:fit-content;text-align:center;">
-            <option value="auto">Automatisch</option>
-            <option value="dark">Dunkel</option>
-            <option value="light">Hell</option>
-          </select>
-        </div>
-        <div class="toggle">
-          <label data-i18n="settingColorblind">Modus für Farbenblinde</label>
-          <input type="checkbox" id="setting-colorblind">
-        </div>
-        <div class="toggle">
-          <label data-i18n="settingSimpleLang">Einfache Sprache</label>
-          <input type="checkbox" id="setting-simple-lang">
-        </div>
-      </div>
-    </section>
+		<!-- Tab: Einstellungen -->
+		<div class="tab-content" id="tab-settings">
+			<section>
+				<h2>Erscheinungsbild</h2>
+				<div class="card">
+					<div class="toggle">
+						<label data-i18n="language">Sprache</label>
+						<select id="setting-language" style="width:fit-content;text-align:center;">
+							<option value="de">Deutsch</option>
+							<option value="en">English</option>
+						</select>
+					</div>
 
-    <section>
-      <h2>Sprache</h2>
-      <div class="card">
-        <select id="setting-language">
-          <option value="de">Deutsch</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-    </section>
+					<div class="toggle">
+						<label data-i18n="settingDarkMode">Dark Mode</label>
+						<select id="setting-theme" style="width:fit-content;text-align:center;">
+							<option value="auto">Automatisch</option>
+							<option value="dark">Dunkel</option>
+							<option value="light">Hell</option>
+						</select>
+					</div>
+					<div class="toggle">
+						<label data-i18n="settingColorblind">Modus für Farbenblinde</label>
+						<input type="checkbox" id="setting-colorblind">
+					</div>
+					<div class="toggle">
+						<label data-i18n="settingSimpleLang">Einfache Sprache</label>
+						<input type="checkbox" id="setting-simple-lang">
+					</div>
+				</div>
+			</section>
 
-    <section>
-      <h2>Privatsphäre &amp; Spoofing</h2>
-      <div class="card">
-        <div class="toggle"><label>Anti-Fingerprinting</label><input type="checkbox" id="s-fingerprint"></div>
-        <div class="toggle"><label>Do Not Track / GPC</label><input type="checkbox" id="s-dnt"></div>
-        <div class="toggle"><label data-i18n="geolocationLabel">Geolocation Spoofing</label><input type="checkbox" id="s-geo"></div>
-        <div id="geo-inputs" style="display:none;margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <input type="number" id="s-geo-lat" placeholder="Latitude" step="0.0001">
-          <input type="number" id="s-geo-lon" placeholder="Longitude" step="0.0001">
-        </div>
-        <div class="toggle"><label>User Agent ändern</label><input type="checkbox" id="s-ua"></div>
-        <input type="text" id="s-ua-string" placeholder="Mozilla/5.0 ..." style="margin-top:8px">
-        <div class="toggle" style="margin-top:12px"><label>IP-Header Manipulation</label><input type="checkbox" id="s-ip"></div>
-        <input type="text" id="s-ip-value" placeholder="192.168.1.1" style="margin-top:8px">
-      </div>
-    </section>
+<!-- 			<section>
+				<h2>Sprache</h2>
+				<div class="card">
+					<select id="setting-language">
+						<option value="de">Deutsch</option>
+						<option value="en">English</option>
+					</select>
+				</div>
+			</section> -->
 
-    <section>
-      <h2>Inhalts-Kontrollen</h2>
-      <div class="card">
-        <div class="toggle"><label>JavaScript (global)</label><input type="checkbox" id="s-block-js"></div>
-        <div class="toggle"><label>Pop-ups blockieren</label><input type="checkbox" id="s-block-popups"></div>
-        <div class="toggle"><label>Medienelemente blockieren</label><input type="checkbox" id="s-block-media"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-          <label style="font-size:12px">Ab Größe (KB):</label>
-          <input type="number" id="s-media-size" style="width:80px" min="0">
-        </div>
-        <div class="toggle"><label>Externe Schriften blockieren</label><input type="checkbox" id="s-block-fonts"></div>
-        <div class="toggle"><label>Vorabruf deaktivieren</label><input type="checkbox" id="s-prefetch"></div>
-        <div class="toggle"><label>Hyperlink-Überwachung deaktivieren</label><input type="checkbox" id="s-hyperlink"></div>
-        <div class="toggle"><label>Geringbandbreiten-Modus</label><input type="checkbox" id="s-low-bandwidth"></div>
-      </div>
-    </section>
+			<section>
+				<h2>Privatsphäre &amp; Spoofing</h2>
+				<div class="card">
+					<div class="toggle"><label>Anti-Fingerprinting</label><input type="checkbox" id="s-fingerprint"></div>
+					<div class="toggle"><label>Do Not Track / GPC</label><input type="checkbox" id="s-dnt"></div>
+					<div class="toggle"><label data-i18n="geolocationLabel">Geolocation Spoofing</label><input type="checkbox" id="s-geo"></div>
+					<div id="geo-inputs" style="display:none;margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+						<input type="number" id="s-geo-lat" placeholder="Latitude" step="0.0001">
+						<input type="number" id="s-geo-lon" placeholder="Longitude" step="0.0001">
+					</div>
+					<div class="toggle"><label>User Agent ändern</label><input type="checkbox" id="s-ua"></div>
+					<input type="text" id="s-ua-string" placeholder="Mozilla/5.0 ..." style="margin-top:8px">
+					<div class="toggle" style="margin-top:12px"><label>IP-Header Manipulation</label><input type="checkbox" id="s-ip"></div>
+					<input type="text" id="s-ip-value" placeholder="192.168.1.1" style="margin-top:8px">
+				</div>
+			</section>
 
-    <section>
-      <h2>Proxy</h2>
-      <div class="card">
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
-          <input type="text" id="s-proxy-host" placeholder="Proxy IP / Hostname">
-          <input type="text" id="s-proxy-port" placeholder="Port">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-          <input type="text" id="s-proxy-user" placeholder="Username (optional)">
-          <input type="password" id="s-proxy-pass" placeholder="Passwort (optional)">
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <button class="btn btn-primary" id="s-proxy-toggle">Proxy aktivieren</button>
-          <span class="status-dot" id="proxy-status-dot"></span>
-          <span id="proxy-status-text" style="font-size:12px"></span>
-        </div>
-      </div>
-    </section>
+			<section>
+				<h2>Inhalts-Kontrollen</h2>
+				<div class="card">
+					<div class="toggle"><label>JavaScript (global)</label><input type="checkbox" id="s-block-js"></div>
+					<div class="toggle"><label>Pop-ups blockieren</label><input type="checkbox" id="s-block-popups"></div>
+					<div class="toggle"><label>Medienelemente blockieren</label><input type="checkbox" id="s-block-media"></div>
+					<div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+						<label style="font-size:12px">Ab Größe (KB):</label>
+						<input type="number" id="s-media-size" style="width:80px" min="0">
+					</div>
+					<div class="toggle"><label>Externe Schriften blockieren</label><input type="checkbox" id="s-block-fonts"></div>
+					<div class="toggle"><label>Vorabruf deaktivieren</label><input type="checkbox" id="s-prefetch"></div>
+					<div class="toggle"><label>Hyperlink-Überwachung deaktivieren</label><input type="checkbox" id="s-hyperlink"></div>
+					<div class="toggle"><label>Geringbandbreiten-Modus</label><input type="checkbox" id="s-low-bandwidth"></div>
+				</div>
+			</section>
 
-    <section>
-      <h2>Kinderschutz</h2>
-      <div class="card">
-        <div class="toggle" style="margin-bottom:10px">
-          <label style="font-weight:600">Status</label>
-          <span id="parental-status-text" style="font-size:12px;color:var(--text-muted)">Nicht eingerichtet</span>
-        </div>
+			<section>
+				<h2>Proxy</h2>
+				<div class="card">
+					<div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
+						<input type="text" id="s-proxy-host" placeholder="Proxy IP / Hostname">
+						<input type="text" id="s-proxy-port" placeholder="Port">
+					</div>
+					<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+						<input type="text" id="s-proxy-user" placeholder="Username (optional)">
+						<input type="password" id="s-proxy-pass" placeholder="Passwort (optional)">
+					</div>
+					<div style="display:flex;align-items:center;gap:12px">
+						<button class="btn btn-primary" id="s-proxy-toggle">Proxy aktivieren</button>
+						<span class="status-dot" id="proxy-status-dot"></span>
+						<span id="proxy-status-text" style="font-size:12px"></span>
+					</div>
+				</div>
+			</section>
 
-        <!-- Kein Passwort gesetzt: Einrichten -->
-        <div id="parental-setup">
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Einstellungen mit Passwort schützen, um unbefugte Änderungen zu verhindern.</p>
-          <input type="password" id="s-parental-pass1" placeholder="Passwort festlegen" style="margin-bottom:6px">
-          <input type="password" id="s-parental-pass2" placeholder="Passwort wiederholen" style="margin-bottom:8px">
-          <button class="btn btn-primary" style="width:100%" id="btn-parental-setup">Kinderschutz einrichten</button>
-          <p id="parental-setup-msg" style="font-size:11px;margin-top:6px;display:none"></p>
-        </div>
+			<section>
+				<h2>Kinderschutz</h2>
+				<div class="card">
+					<div class="toggle" style="margin-bottom:10px">
+						<label style="font-weight:600">Status</label>
+						<span id="parental-status-text" style="font-size:12px;color:var(--text-muted)">Nicht eingerichtet</span>
+					</div>
 
-        <!-- Passwort gesetzt, gesperrt: Entsperren -->
-        <div id="parental-locked" style="display:none">
-          <div style="display:flex;gap:8px">
-            <input type="password" id="s-parental-unlock" placeholder="Passwort" style="flex:1">
-            <button class="btn btn-primary" id="btn-parental-unlock">Entsperren</button>
-          </div>
-          <p id="parental-unlock-msg" style="font-size:11px;margin-top:4px;color:var(--danger);display:none">Falsches Passwort.</p>
-        </div>
+					<!-- Kein Passwort gesetzt: Einrichten -->
+					<div id="parental-setup">
+						<p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Einstellungen mit Passwort schützen, um unbefugte Änderungen zu verhindern.</p>
+						<input type="password" id="s-parental-pass1" placeholder="Passwort festlegen" style="margin-bottom:6px">
+						<input type="password" id="s-parental-pass2" placeholder="Passwort wiederholen" style="margin-bottom:8px">
+						<button class="btn btn-primary" style="width:100%" id="btn-parental-setup">Kinderschutz einrichten</button>
+						<p id="parental-setup-msg" style="font-size:11px;margin-top:6px;display:none"></p>
+					</div>
 
-        <!-- Entsperrt: Einstellungen -->
-        <div id="parental-unlocked" style="display:none">
-          <div class="toggle">
-            <label>Kinderschutz aktiv</label>
-            <input type="checkbox" id="s-parental-enabled">
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-            <div>
-              <label style="font-size:12px;display:block;margin-bottom:4px">Erlaubt ab (Uhr):</label>
-              <input type="number" id="s-parental-start" min="0" max="23" style="width:100%">
-            </div>
-            <div>
-              <label style="font-size:12px;display:block;margin-bottom:4px">Erlaubt bis (Uhr):</label>
-              <input type="number" id="s-parental-end" min="0" max="23" style="width:100%">
-            </div>
-          </div>
-          <div style="margin-top:10px">
-            <label style="font-size:12px;display:block;margin-bottom:4px">Neues Passwort (leer = unverändert):</label>
-            <input type="password" id="s-parental-new-pass" placeholder="Neues Passwort">
-          </div>
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button class="btn btn-primary" style="flex:1" id="btn-parental-save">Speichern</button>
-            <button class="btn btn-ghost" id="btn-parental-lock">Sperren</button>
-          </div>
-          <button class="btn btn-danger" style="width:100%;margin-top:8px;font-size:11px" id="btn-parental-remove">Kinderschutz &amp; Passwort vollständig entfernen</button>
-        </div>
-      </div>
-    </section>
+					<!-- Passwort gesetzt, gesperrt: Entsperren -->
+					<div id="parental-locked" style="display:none">
+						<div style="display:flex;gap:8px">
+							<input type="password" id="s-parental-unlock" placeholder="Passwort" style="flex:1">
+							<button class="btn btn-primary" id="btn-parental-unlock">Entsperren</button>
+						</div>
+						<p id="parental-unlock-msg" style="font-size:11px;margin-top:4px;color:var(--danger);display:none">Falsches Passwort.</p>
+					</div>
 
-    <section>
-      <h2>Export / Import</h2>
-      <div class="card" style="display:flex;gap:8px">
-        <button class="btn btn-ghost" id="btn-export">Einstellungen exportieren</button>
-        <button class="btn btn-ghost" id="btn-import">Einstellungen importieren</button>
-        <input type="file" id="import-file" accept=".json" style="display:none">
-      </div>
-    </section>
-  </div>
+					<!-- Entsperrt: Einstellungen -->
+					<div id="parental-unlocked" style="display:none">
+						<div class="toggle">
+							<label>Kinderschutz aktiv</label>
+							<input type="checkbox" id="s-parental-enabled">
+						</div>
+						<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+							<div>
+								<label style="font-size:12px;display:block;margin-bottom:4px">Erlaubt ab (Uhr):</label>
+								<input type="number" id="s-parental-start" min="0" max="23" style="width:100%">
+							</div>
+							<div>
+								<label style="font-size:12px;display:block;margin-bottom:4px">Erlaubt bis (Uhr):</label>
+								<input type="number" id="s-parental-end" min="0" max="23" style="width:100%">
+							</div>
+						</div>
+						<div style="margin-top:10px">
+							<label style="font-size:12px;display:block;margin-bottom:4px">Neues Passwort (leer = unverändert):</label>
+							<input type="password" id="s-parental-new-pass" placeholder="Neues Passwort">
+						</div>
+						<div style="display:flex;gap:8px;margin-top:10px">
+							<button class="btn btn-primary" style="flex:1" id="btn-parental-save">Speichern</button>
+							<button class="btn btn-ghost" id="btn-parental-lock">Sperren</button>
+						</div>
+						<button class="btn btn-danger" style="width:100%;margin-top:8px;font-size:11px" id="btn-parental-remove">Kinderschutz &amp; Passwort vollständig entfernen</button>
+					</div>
+				</div>
+			</section>
 
-  <!-- Tab: Filter -->
-  <div class="tab-content" id="tab-filter">
-    <section>
-      <h2>Blockliste hinzufügen</h2>
-      <div class="card">
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="text" id="filter-name" placeholder="Name der Liste">
-          <select id="filter-type">
-            <option value="block">Blocklist</option>
-            <option value="allow">Allowlist</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="url" id="filter-url" placeholder="https://... URL zur Liste" style="flex:1">
-          <button class="btn btn-ghost" id="btn-load-url">Laden</button>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-          <button class="btn btn-ghost" id="btn-load-file">Datei wählen</button>
-          <input type="file" id="filter-file" accept=".txt,.ubs" style="display:none">
-          <span id="filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
-        </div>
-        <textarea id="filter-text" rows="5" placeholder="Regeln direkt eingeben..."></textarea>
-        <div style="margin-top:8px;display:flex;justify-content:flex-end">
-          <button class="btn btn-primary" id="btn-add-list">Liste speichern</button>
-        </div>
-      </div>
-    </section>
+			<section>
+				<h2>Export / Import</h2>
+				<div class="card" style="display:flex;gap:8px">
+					<button class="btn btn-ghost" id="btn-export">Einstellungen exportieren</button>
+					<button class="btn btn-ghost" id="btn-import">Einstellungen importieren</button>
+					<input type="file" id="import-file" accept=".json" style="display:none">
+				</div>
+			</section>
+		</div>
 
-    <section>
-      <h2>Kinderschutz-Filterliste</h2>
-      <div class="card">
-        <!-- Gesperrt: Hinweis -->
-        <div id="parental-filter-locked-msg" style="display:none">
-          <p style="font-size:12px;color:var(--text-muted)">
-            🔒 Kinderschutz ist eingerichtet. Bitte zuerst im <strong>Einstellungen-Tab</strong> entsperren, um die Filterliste zu bearbeiten.
-          </p>
-        </div>
-        <!-- Entsperrt oder nicht eingerichtet: Formular -->
-        <div id="parental-filter-form">
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
-            Diese Liste ist nur aktiv, wenn der Kinderschutz im Einstellungen-Tab aktiviert ist.
-          </p>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <input type="url" id="parental-filter-url" placeholder="https://... URL zur Jugendschutzliste" style="flex:1">
-            <button class="btn btn-ghost" id="btn-parental-load-url">Laden</button>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-            <button class="btn btn-ghost" id="btn-parental-load-file">Datei wählen</button>
-            <input type="file" id="parental-filter-file" accept=".txt,.ubs" style="display:none">
-            <span id="parental-filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
-          </div>
-          <textarea id="parental-filter-text" rows="4" placeholder="Regeln direkt eingeben..."></textarea>
-          <div style="margin-top:8px;display:flex;justify-content:flex-end">
-            <button class="btn btn-primary" id="btn-parental-add-list">Kinderschutzliste speichern</button>
-          </div>
-        </div>
-      </div>
-    </section>
+		<!-- Tab: Filter -->
+		<div class="tab-content" id="tab-filter">
+			<section>
+				<h2>Blockliste hinzufügen</h2>
+				<div class="card">
+					<div style="display:flex;gap:8px;margin-bottom:8px">
+						<input type="text" id="filter-name" placeholder="Name der Liste">
+						<select id="filter-type">
+							<option value="block">Blocklist</option>
+							<option value="allow">Allowlist</option>
+						</select>
+					</div>
+					<div style="display:flex;gap:8px;margin-bottom:8px">
+						<input type="url" id="filter-url" placeholder="https://... URL zur Liste" style="flex:1">
+						<button class="btn btn-ghost" id="btn-load-url">Laden</button>
+					</div>
+					<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+						<button class="btn btn-ghost" id="btn-load-file">Datei wählen</button>
+						<input type="file" id="filter-file" accept=".txt,.ubs" style="display:none">
+						<span id="filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
+					</div>
+					<textarea id="filter-text" rows="5" placeholder="Regeln direkt eingeben..."></textarea>
+					<div style="margin-top:8px;display:flex;justify-content:flex-end">
+						<button class="btn btn-primary" id="btn-add-list">Liste speichern</button>
+					</div>
+				</div>
+			</section>
 
-    <section>
-      <h2>Aktive Listen</h2>
-      <div id="filter-list-container"></div>
-    </section>
-  </div>
+			<section>
+				<h2>Kinderschutz-Filterliste</h2>
+				<div class="card">
+					<!-- Gesperrt: Hinweis -->
+					<div id="parental-filter-locked-msg" style="display:none">
+						<p style="font-size:12px;color:var(--text-muted)">
+							🔒 Kinderschutz ist eingerichtet. Bitte zuerst im <strong>Einstellungen-Tab</strong> entsperren, um die Filterliste zu bearbeiten.
+						</p>
+					</div>
+					<!-- Entsperrt oder nicht eingerichtet: Formular -->
+					<div id="parental-filter-form">
+						<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+							Diese Liste ist nur aktiv, wenn der Kinderschutz im Einstellungen-Tab aktiviert ist.
+						</p>
+						<div style="display:flex;gap:8px;margin-bottom:8px">
+							<input type="url" id="parental-filter-url" placeholder="https://... URL zur Jugendschutzliste" style="flex:1">
+							<button class="btn btn-ghost" id="btn-parental-load-url">Laden</button>
+						</div>
+						<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+							<button class="btn btn-ghost" id="btn-parental-load-file">Datei wählen</button>
+							<input type="file" id="parental-filter-file" accept=".txt,.ubs" style="display:none">
+							<span id="parental-filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
+						</div>
+						<textarea id="parental-filter-text" rows="4" placeholder="Regeln direkt eingeben..."></textarea>
+						<div style="margin-top:8px;display:flex;justify-content:flex-end">
+							<button class="btn btn-primary" id="btn-parental-add-list">Kinderschutzliste speichern</button>
+						</div>
+					</div>
+				</div>
+			</section>
 
-  <!-- Tab: Über Vallanx -->
-  <div class="tab-content" id="tab-about">
-    <div class="card" style="text-align:center;padding:32px">
-      <img src="../resources/img/vallanx_400.png" alt="Vallanx" style="height:30px;margin-bottom:36px">
-      <h2 style="font-size:18px;color:var(--accent)">Vallanx Privacy Shield</h2>
-      <p style="color:var(--text-muted);margin:8px 0">Lizenz: MIT Open Source</p>
-      <div style="display:flex;justify-content:center;gap:16px;margin-top:20px">
-        <a href="https://github.com/vallanx/privacy-shield" target="_blank" class="btn btn-ghost">GitHub</a>
-        <a href="https://www.vallanx.com/privacy-shield" target="_blank" class="btn btn-primary">Support &amp; Hilfe</a>
-      </div>
-    </div>
-  </div>
+			<section>
+				<h2>Aktive Listen</h2>
+				<div id="filter-list-container"></div>
+			</section>
+		</div>
 
-  <script type="module" src="dashboard.js"></script>
-</body>
-</html>
+		<!-- Tab: Über Vallanx -->
+		<div class="tab-content" id="tab-about">
+			<div class="card" style="text-align:center;padding:32px">
+				<img src="../resources/img/vallanx_400.png" alt="Vallanx" style="height:30px;margin-bottom:36px">
+				<h2 style="font-size:18px;color:var(--accent)">Vallanx Privacy Shield</h2>
+				<p style="color:var(--text-muted);margin:8px 0">Lizenz: MIT Open Source</p>
+				<div style="display:flex;justify-content:center;gap:16px;margin-top:20px">
+					<a href="https://github.com/vallanx/privacy-shield" target="_blank" class="btn btn-ghost">GitHub</a>
+					<a href="https://www.vallanx.com/privacy-shield" target="_blank" class="btn btn-primary">Support &amp; Hilfe</a>
+				</div>
+			</div>
+		</div>
+
+		<script type="module" src="dashboard.js"></script>
+	</body>
+	</html>
