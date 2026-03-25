@@ -124,6 +124,11 @@ function showParentalSection(s) {
     document.getElementById('s-parental-start').value     = s.parentalStartHour;
     document.getElementById('s-parental-end').value       = s.parentalEndHour;
   }
+
+  // Kinderschutz-Filterbereich im Filter-Tab mit sperren/entsperren
+  const filterLocked = !!s.parentalPasswordHash && !parentalUnlocked;
+  document.getElementById('parental-filter-locked-msg').style.display = filterLocked ? '' : 'none';
+  document.getElementById('parental-filter-form').style.display       = filterLocked ? 'none' : '';
 }
 
 function updateProxyStatus(enabled) {
@@ -275,10 +280,13 @@ function bindExportImportEvents() {
 // ─── Filter Lists ─────────────────────────────────────────────────────────────
 
 async function renderFilterLists() {
-  const { blocklists } = await getSettings();
+  const s = await getSettings();
+  const { blocklists } = s;
   const container = document.getElementById('filter-list-container');
   container.innerHTML = '';
   for (const list of blocklists) {
+    const isParental = list.type === 'parental';
+    const locked = isParental && !!s.parentalPasswordHash && !parentalUnlocked;
     const el = document.createElement('div');
     el.className = 'card';
     el.style.cssText = 'margin-bottom:8px;display:flex;align-items:center;justify-content:space-between';
@@ -286,11 +294,13 @@ async function renderFilterLists() {
       <div>
         <strong>${list.name}</strong>
         <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${list.type}</span>
-        ${list.type === 'parental' ? '<span style="font-size:10px;color:var(--accent-2);margin-left:6px">nur aktiv bei Kinderschutz</span>' : ''}
+        ${isParental ? '<span style="font-size:10px;color:var(--accent-2);margin-left:6px">nur aktiv bei Kinderschutz</span>' : ''}
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="checkbox" ${list.enabled ? 'checked' : ''} data-id="${list.id}">
-        <button class="btn btn-danger" style="padding:4px 10px;font-size:11px" data-delete="${list.id}">✕</button>
+        <input type="checkbox" ${list.enabled ? 'checked' : ''} data-id="${list.id}" ${locked ? 'disabled' : ''}>
+        <button class="btn btn-danger" style="padding:4px 10px;font-size:11px" data-delete="${list.id}" ${locked ? 'disabled title="Kinderschutz entsperren um zu löschen"' : ''}>
+          ${locked ? '🔒' : '✕'}
+        </button>
       </div>
     `;
     container.appendChild(el);

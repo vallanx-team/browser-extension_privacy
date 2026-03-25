@@ -234,21 +234,30 @@
     <section>
       <h2>Kinderschutz-Filterliste</h2>
       <div class="card">
-        <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
-          Diese Liste ist nur aktiv, wenn der Kinderschutz im Einstellungen-Tab aktiviert ist.
-        </p>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="url" id="parental-filter-url" placeholder="https://... URL zur Jugendschutzliste" style="flex:1">
-          <button class="btn btn-ghost" id="btn-parental-load-url">Laden</button>
+        <!-- Gesperrt: Hinweis -->
+        <div id="parental-filter-locked-msg" style="display:none">
+          <p style="font-size:12px;color:var(--text-muted)">
+            🔒 Kinderschutz ist eingerichtet. Bitte zuerst im <strong>Einstellungen-Tab</strong> entsperren, um die Filterliste zu bearbeiten.
+          </p>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-          <button class="btn btn-ghost" id="btn-parental-load-file">Datei wählen</button>
-          <input type="file" id="parental-filter-file" accept=".txt,.ubs" style="display:none">
-          <span id="parental-filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
-        </div>
-        <textarea id="parental-filter-text" rows="4" placeholder="Regeln direkt eingeben..."></textarea>
-        <div style="margin-top:8px;display:flex;justify-content:flex-end">
-          <button class="btn btn-primary" id="btn-parental-add-list">Kinderschutzliste speichern</button>
+        <!-- Entsperrt oder nicht eingerichtet: Formular -->
+        <div id="parental-filter-form">
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+            Diese Liste ist nur aktiv, wenn der Kinderschutz im Einstellungen-Tab aktiviert ist.
+          </p>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <input type="url" id="parental-filter-url" placeholder="https://... URL zur Jugendschutzliste" style="flex:1">
+            <button class="btn btn-ghost" id="btn-parental-load-url">Laden</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <button class="btn btn-ghost" id="btn-parental-load-file">Datei wählen</button>
+            <input type="file" id="parental-filter-file" accept=".txt,.ubs" style="display:none">
+            <span id="parental-filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
+          </div>
+          <textarea id="parental-filter-text" rows="4" placeholder="Regeln direkt eingeben..."></textarea>
+          <div style="margin-top:8px;display:flex;justify-content:flex-end">
+            <button class="btn btn-primary" id="btn-parental-add-list">Kinderschutzliste speichern</button>
+          </div>
         </div>
       </div>
     </section>
