@@ -22,14 +22,6 @@
     <p class="blocked-sub" data-i18n="parentalBlockedSub">Please ask an adult if you need access.</p>
     <button class="btn btn-ghost" id="btn-back" data-i18n="blockedBack" style="margin-top:24px">← Back</button>
   </div>
-  <script type="module">
-    import { loadI18n, applyI18n } from '../resources/js/i18n.js';
-    (async () => {
-      const { language = 'en', simpleLang = false } = await chrome.storage.sync.get({ language: 'en', simpleLang: false });
-      await loadI18n(language, simpleLang);
-      applyI18n();
-    })();
-    document.getElementById('btn-back').addEventListener('click', () => history.back());
-  </script>
+  <script type="module" src="blocked-parental.js"></script>
 </body>
 </html>

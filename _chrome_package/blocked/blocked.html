@@ -24,23 +24,6 @@
     <button class="btn btn-ghost" id="btn-back" data-i18n="blockedBack" style="margin-top:12px">← Back</button>
     <button class="btn btn-danger btn-continue" id="btn-continue" data-i18n="blockedContinue">Continue anyway</button>
   </div>
-  <script type="module">
-    import { loadI18n, t, applyI18n } from '../resources/js/i18n.js';
-    (async () => {
-      const { language = 'en', simpleLang = false } = await chrome.storage.sync.get({ language: 'en', simpleLang: false });
-      await loadI18n(language, simpleLang);
-      applyI18n();
-      const listName = new URLSearchParams(location.search).get('list');
-      if (listName) {
-        const el = document.getElementById('blocked-list-info');
-        el.textContent = t('blockedByList', { list: listName });
-        el.style.display = 'block';
-      }
-    })();
-    document.getElementById('btn-back').addEventListener('click', () => history.back());
-    document.getElementById('btn-continue').addEventListener('click', () => {
-      document.getElementById('btn-continue').textContent = '← Enter URL manually';
-    });
-  </script>
+  <script type="module" src="blocked.js"></script>
 </body>
 </html>

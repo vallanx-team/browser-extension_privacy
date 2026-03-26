@@ -30,7 +30,7 @@ export function t(key, substitutions = {}) {
   if (!entry) return key;
   let text = entry.message;
   for (const [k, v] of Object.entries(substitutions)) {
-    text = text.replaceAll(`$${k}$`, v);
+    text = text.replaceAll(`{{${k}}}`, v);
   }
   return text;
 }
