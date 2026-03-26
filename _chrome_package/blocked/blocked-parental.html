@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Zugang gesperrt — Vallanx Privacy Shield</title>
+  <title>Blocked — Vallanx Privacy Shield</title>
   <link rel="stylesheet" href="../resources/css/styles.css">
   <style>
     body { display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center; }
@@ -15,16 +15,17 @@
 </head>
 <body>
   <div class="blocked-card card">
-    <div class="shield-icon">🔒</div>
-    <h1 data-i18n="parentalBlockedTitle">Zugang gesperrt</h1>
-    <p data-i18n="parentalBlockedMsg">Diese Seite ist durch die Kinderschutz-Einstellungen gesperrt.</p>
-    <p class="blocked-sub" data-i18n="parentalBlockedSub">Wende dich an einen Erwachsenen, wenn du Zugang benötigst.</p>
-    <button class="btn btn-ghost" id="btn-back" data-i18n="blockedBack" style="margin-top:24px">← Zurück</button>
+    <!-- <div class="shield-icon">🔒</div> -->
+    <img src="do_not_enter.gif" style="width: 220px; display: block; margin: auto;" alt="Technology illustrations by Storyset">
+    <h1 data-i18n="parentalBlockedTitle">Access Restricted</h1>
+    <p data-i18n="parentalBlockedMsg">This page is restricted by parental controls.</p>
+    <p class="blocked-sub" data-i18n="parentalBlockedSub">Please ask an adult if you need access.</p>
+    <button class="btn btn-ghost" id="btn-back" data-i18n="blockedBack" style="margin-top:24px">← Back</button>
   </div>
   <script type="module">
     import { loadI18n, applyI18n } from '../resources/js/i18n.js';
     (async () => {
-      const { language = 'de', simpleLang = false } = await chrome.storage.sync.get({ language: 'de', simpleLang: false });
+      const { language = 'en', simpleLang = false } = await chrome.storage.sync.get({ language: 'en', simpleLang: false });
       await loadI18n(language, simpleLang);
       applyI18n();
     })();
