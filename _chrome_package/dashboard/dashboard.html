@@ -12,6 +12,7 @@
 		.tab-content { display: none; padding-top: 20px; }
 		.tab-content.active { display: block; }
 		.tooltip { border: 1px solid #cccccc; border-radius: 4px; font-size: .785rem; color: #666; margin: 4px 0; padding: 3px 6px; font-style: italic; }
+		.licensecopy { border-radius: 6px; border: 1px solid rgba(24, 75, 91, 1); background: rgba(209, 230, 237, 1); padding: 12px; margin: 12px 0; font-size: .8rem; line-height: 1.5; font-weight: 500; text-align: left; color: rgba(86, 100, 105, .8); p {margin-bottom: 12px;}}
 		section { margin-bottom: 20px; }
 		section h2 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;
 			letter-spacing: 0.05em; margin-bottom: 12px; }
@@ -61,7 +62,17 @@
 					<label data-i18n="settingLanguage">Language</label>
 					<select id="setting-language" style="width:fit-content;text-align:center;">
 						<option value="de">Deutsch</option>
+						<option value="ee">Eesti keel</option>
 						<option value="en">English</option>
+						<option value="es">Español</option>
+						<option value="fr">Français</option>
+						<option value="gr">ελληνικός</option>
+						<option value="it">Italiano</option>
+						<option value="nl">Nederlands</option>
+						<option value="no">Norsk</option>
+						<option value="pl">Polski</option>
+						<option value="pt">Português</option>
+						<option value="tr">Türkçe</option>
 					</select>
 				</div>
 				<div class="toggle">
@@ -227,6 +238,7 @@
 				<div style="margin-top:8px;display:flex;justify-content:flex-end">
 					<button class="btn btn-primary" id="btn-add-list" data-i18n="filterSaveBtn">Save list</button>
 				</div>
+				<p id="filter-add-error" style="display:none;color:var(--color-red);font-size:12px;margin-top:6px"></p>
 			</div>
 		</section>
 
@@ -270,11 +282,25 @@
 		<div class="card" style="text-align:center;padding:32px">
 			<img src="../resources/img/vallanx_400.png" alt="Vallanx" style="height:30px;margin-bottom:36px">
 			<h2 style="font-size:18px;color:var(--accent)">Vallanx Privacy Shield</h2>
-			<p style="color:var(--text-muted);margin:8px 0"><span data-i18n="released">Released</span>: 03/2026 | <span data-i18n="version">Version</span>: 0.2.0</p>
+			<p style="color:var(--text-muted);margin:8px 0"><span data-i18n="released">Released</span>: 03/2026 | <span data-i18n="version">Version</span>: 0.2.1</p>
 			<p style="color:var(--text-muted);margin:8px 0" data-i18n="aboutLicense">License: MIT Open Source</p>
+
+			<div class="licensecopy">
+				<p>By using this browser extension you acknowledge and accept the following terms. They are intedend to be complete, plain, and proportionate to the nature of the tool.</p>
+				<p>You may us this browser extension for any lawful purpose.</p>
+				<p>No may buiild with it, on top of it, or in reference to it.</p>
+				<p>The functionality is not guaranteed, as this tool is provided for free and based on community work. This includs availability, correctness, continuity, or fitness for any purpose.</p>
+				<p>Access to this tool is not conditioned on approval.</p>
+				<p>Nothing here should be assumed reversible, recoverable, or preserved.</p>
+				<p>There is no support obligation, service commitment, or warranty of any kind. Nonetheless, issues can be reported to the public GitHub repository.</p>
+				<p>You are responsible for what you do, what you create, and what follows from either.</p>
+				<p>There are no additional terms.</p>
+				<p>Vallanx is a protected trademark. Use of the trademark, name, or any association therewith is permitted only with the written consent of Vallanx. All rights reserved.</p>
+			</div>
+
 			<div style="display:flex;justify-content:center;gap:16px;margin-top:20px">
-				<a href="https://github.com/vallanx/privacy-shield" target="_blank" class="btn btn-ghost" data-i18n="aboutGithub">GitHub</a>
-				<a href="https://www.vallanx.com/privacy-shield" target="_blank" class="btn btn-primary" data-i18n="aboutSupport">Support &amp; Help</a>
+				<a href="https://github.com/vallanx-team/browser-extension_privacy" target="_blank" class="btn btn-ghost" data-i18n="aboutGithub">GitHub</a>
+				<a href="https://www.vallanx.com/privacy-shield" target="_blank" class="btn btn-primary" data-i18n="aboutSupport">About Privacy Shield</a>
 			</div>
 		</div>
 	</div>

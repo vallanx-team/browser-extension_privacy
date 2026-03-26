@@ -1,7 +1,7 @@
 # Vallanx Privacy Shield
 
 Release: March 2025
-Version: 1.0
+Version: 0.2.0
 
 A Chrome extension (Manifest V3) that blocks trackers, protects your browser fingerprint, and gives you full control over what websites can do.
 

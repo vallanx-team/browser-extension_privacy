@@ -353,21 +353,39 @@ async function renderFilterLists() {
 
 function bindFilterEvents() {
   document.getElementById('btn-add-list').addEventListener('click', async () => {
-    const name = document.getElementById('filter-name').value.trim();
-    const type = document.getElementById('filter-type').value;
-    const url  = document.getElementById('filter-url').value.trim();
-    const text = document.getElementById('filter-text').value.trim();
-    if (!name || (!url && !text)) return;
+    const name    = document.getElementById('filter-name').value.trim();
+    const type    = document.getElementById('filter-type').value;
+    const url     = document.getElementById('filter-url').value.trim();
+    const text    = document.getElementById('filter-text').value.trim();
+    const errorEl = document.getElementById('filter-add-error');
+
+    const showError = (msg) => {
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+    };
+
+    errorEl.style.display = 'none';
+
+    if (!name) return showError(t('filterErrorNoName'));
+    if (!url && !text) return showError(t('filterErrorNoSource'));
 
     let listText = text;
     if (url) {
-      const resp = await fetch(url);
-      listText = await resp.text();
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) return showError(t('filterErrorFetch'));
+        listText = await resp.text();
+      } catch {
+        return showError(t('filterErrorFetch'));
+      }
     }
 
     const settings = await getSettings();
     settings.blocklists.push({ id: crypto.randomUUID(), name, type, url, text: listText, enabled: true });
     await setSetting('blocklists', settings.blocklists);
+    document.getElementById('filter-name').value = '';
+    document.getElementById('filter-url').value  = '';
+    document.getElementById('filter-text').value = '';
     renderFilterLists();
   });
 

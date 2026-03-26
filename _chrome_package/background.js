@@ -209,13 +209,16 @@ async function rebuildBlockingRules() {
           condition: cond
         });
       } else {
-        // For main_frame domain blocks: redirect to blocked.html
+        // For main_frame domain blocks: redirect to blocked page
         const isMainFrameBlock = rule.matchType === 'domain' && !cond.resourceTypes;
+        const blockedPage = list.type === 'parental'
+          ? '/blocked/blocked-parental.html'
+          : `/blocked/blocked.html?list=${encodeURIComponent(list.name)}`;
         newRules.push({
           id: idCounter++,
           priority: 1,
           action: isMainFrameBlock
-            ? { type: 'redirect', redirect: { extensionPath: '/blocked/blocked.html' } }
+            ? { type: 'redirect', redirect: { extensionPath: blockedPage } }
             : { type: 'block' },
           condition: isMainFrameBlock
             ? { ...cond, resourceTypes: ['main_frame'] }

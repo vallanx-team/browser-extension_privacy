@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Zugang gesperrt — Vallanx Privacy Shield</title>
+  <link rel="stylesheet" href="../resources/css/styles.css">
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center; }
+    .blocked-card { max-width:480px; padding:40px; }
+    .shield-icon { font-size:64px; margin-bottom:16px; }
+    h1 { color:var(--color-yellow); font-size:24px; margin-bottom:12px; }
+    p { color:var(--text-muted); }
+    .blocked-sub { font-size:13px; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="blocked-card card">
+    <div class="shield-icon">🔒</div>
+    <h1 data-i18n="parentalBlockedTitle">Zugang gesperrt</h1>
+    <p data-i18n="parentalBlockedMsg">Diese Seite ist durch die Kinderschutz-Einstellungen gesperrt.</p>
+    <p class="blocked-sub" data-i18n="parentalBlockedSub">Wende dich an einen Erwachsenen, wenn du Zugang benötigst.</p>
+    <button class="btn btn-ghost" id="btn-back" data-i18n="blockedBack" style="margin-top:24px">← Zurück</button>
+  </div>
+  <script type="module">
+    import { loadI18n, applyI18n } from '../resources/js/i18n.js';
+    (async () => {
+      const { language = 'de', simpleLang = false } = await chrome.storage.sync.get({ language: 'de', simpleLang: false });
+      await loadI18n(language, simpleLang);
+      applyI18n();
+    })();
+    document.getElementById('btn-back').addEventListener('click', () => history.back());
+  </script>
+</body>
+</html>
