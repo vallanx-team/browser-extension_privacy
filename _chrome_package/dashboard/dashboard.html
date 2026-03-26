@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<title>Vallanx Privacy Shield — Dashboard</title>
@@ -182,13 +182,69 @@
 					</div>
 					<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
 						<div>
-							<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalFromLabel">Allowed from (hour):</label>
-							<input type="number" id="s-parental-start" min="0" max="23" style="width:100%">
+							<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalFromLabel">Allowed from:</label>
+							<input type="time" id="s-parental-start" style="width:100%">
 						</div>
 						<div>
-							<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalToLabel">Allowed until (hour):</label>
-							<input type="number" id="s-parental-end" min="0" max="23" style="width:100%">
+							<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalToLabel">Allowed until:</label>
+							<input type="time" id="s-parental-end" style="width:100%">
 						</div>
+					</div>
+					<div style="margin-top:8px">
+						<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalTimezoneLabel">Timezone:</label>
+						<select id="s-parental-timezone" style="width:100%">
+							<optgroup label="Europe">
+								<option value="Europe/Berlin">Europe/Berlin (DE, AT, CH)</option>
+								<option value="Europe/London">Europe/London (GB, IE)</option>
+								<option value="Europe/Paris">Europe/Paris (FR)</option>
+								<option value="Europe/Madrid">Europe/Madrid (ES)</option>
+								<option value="Europe/Rome">Europe/Rome (IT)</option>
+								<option value="Europe/Amsterdam">Europe/Amsterdam (NL)</option>
+								<option value="Europe/Brussels">Europe/Brussels (BE)</option>
+								<option value="Europe/Warsaw">Europe/Warsaw (PL)</option>
+								<option value="Europe/Prague">Europe/Prague (CZ, SK)</option>
+								<option value="Europe/Vienna">Europe/Vienna (AT)</option>
+								<option value="Europe/Zurich">Europe/Zurich (CH)</option>
+								<option value="Europe/Stockholm">Europe/Stockholm (SE)</option>
+								<option value="Europe/Oslo">Europe/Oslo (NO)</option>
+								<option value="Europe/Copenhagen">Europe/Copenhagen (DK)</option>
+								<option value="Europe/Helsinki">Europe/Helsinki (FI, EE)</option>
+								<option value="Europe/Riga">Europe/Riga (LV)</option>
+								<option value="Europe/Vilnius">Europe/Vilnius (LT)</option>
+								<option value="Europe/Lisbon">Europe/Lisbon (PT)</option>
+								<option value="Europe/Athens">Europe/Athens (GR)</option>
+								<option value="Europe/Bucharest">Europe/Bucharest (RO)</option>
+								<option value="Europe/Budapest">Europe/Budapest (HU)</option>
+								<option value="Europe/Istanbul">Europe/Istanbul (TR)</option>
+								<option value="Europe/Kyiv">Europe/Kyiv (UA)</option>
+								<option value="Europe/Moscow">Europe/Moscow (RU)</option>
+							</optgroup>
+							<optgroup label="Americas">
+								<option value="America/New_York">America/New York (US East)</option>
+								<option value="America/Chicago">America/Chicago (US Central)</option>
+								<option value="America/Denver">America/Denver (US Mountain)</option>
+								<option value="America/Los_Angeles">America/Los Angeles (US West)</option>
+								<option value="America/Toronto">America/Toronto (CA East)</option>
+								<option value="America/Vancouver">America/Vancouver (CA West)</option>
+								<option value="America/Sao_Paulo">America/Sao Paulo (BR)</option>
+								<option value="America/Buenos_Aires">America/Argentina/Buenos Aires (AR)</option>
+								<option value="America/Mexico_City">America/Mexico City (MX)</option>
+							</optgroup>
+							<optgroup label="Asia / Pacific">
+								<option value="Asia/Dubai">Asia/Dubai (AE)</option>
+								<option value="Asia/Kolkata">Asia/Kolkata (IN)</option>
+								<option value="Asia/Singapore">Asia/Singapore (SG)</option>
+								<option value="Asia/Shanghai">Asia/Shanghai (CN)</option>
+								<option value="Asia/Tokyo">Asia/Tokyo (JP)</option>
+								<option value="Asia/Seoul">Asia/Seoul (KR)</option>
+								<option value="Australia/Sydney">Australia/Sydney (AU East)</option>
+								<option value="Pacific/Auckland">Pacific/Auckland (NZ)</option>
+							</optgroup>
+							<optgroup label="UTC">
+								<option value="UTC">UTC</option>
+							</optgroup>
+						</select>
+						<p style="font-size:11px;color:var(--text-muted);margin-top:4px" data-i18n="parentalTimezoneSource">Time from internet server</p>
 					</div>
 					<div style="margin-top:10px">
 						<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalNewPwLabel">New password (empty = unchanged):</label>
@@ -296,6 +352,7 @@
 				<p>You are responsible for what you do, what you create, and what follows from either.</p>
 				<p>There are no additional terms.</p>
 				<p>Vallanx is a protected trademark. Use of the trademark, name, or any association therewith is permitted only with the written consent of Vallanx. All rights reserved.</p>
+				<p><a href="https://storyset.com/technology" style="color: rgba(86, 100, 105, .8); text-decoration: none;">Technology illustrations by Storyset</a></p>
 			</div>
 
 			<div style="display:flex;justify-content:center;gap:16px;margin-top:20px">

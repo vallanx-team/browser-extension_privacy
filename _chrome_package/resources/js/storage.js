@@ -48,8 +48,9 @@ const DEFAULTS = {
   // Parental Controls
   parentalEnabled: false,
   parentalPasswordHash: '',
-  parentalStartHour: 8,
-  parentalEndHour: 20,
+  parentalStartTime: '08:00',
+  parentalEndTime:   '20:00',
+  parentalTimezone:  'Europe/Berlin',
 };
 
 export async function getSettings() {

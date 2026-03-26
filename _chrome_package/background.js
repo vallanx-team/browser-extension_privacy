@@ -324,21 +324,29 @@ chrome.alarms.onAlarm.addListener(alarm => {
   if (alarm.name === 'parentalCheck') checkParentalTimeBlock();
 });
 
+function _toMinutes(hhmm) {
+  const [h, m] = (hhmm || '00:00').split(':').map(Number);
+  return h * 60 + (m || 0);
+}
+
 async function checkParentalTimeBlock() {
   const s = await getSettings();
   if (!s.parentalEnabled) return;
+
+  const startMin = _toMinutes(s.parentalStartTime);
+  const endMin   = _toMinutes(s.parentalEndTime);
+
   try {
-    const resp = await fetch('https://worldtimeapi.org/api/timezone/Europe/Berlin');
+    const resp = await fetch(`https://worldtimeapi.org/api/timezone/${s.parentalTimezone}`);
     const data = await resp.json();
-    const serverHour = new Date(data.datetime).getHours();
-    if (serverHour < s.parentalStartHour || serverHour >= s.parentalEndHour) {
-      await blockAllTabs();
-    }
+    const serverDt  = new Date(data.datetime);
+    const serverMin = serverDt.getHours() * 60 + serverDt.getMinutes();
+    if (serverMin < startMin || serverMin >= endMin) await blockAllTabs();
   } catch {
-    const h = new Date().getHours();
-    if (h < s.parentalStartHour || h >= s.parentalEndHour) {
-      await blockAllTabs();
-    }
+    // Fallback auf lokale Zeit wenn Zeitserver nicht erreichbar
+    const now    = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    if (nowMin < startMin || nowMin >= endMin) await blockAllTabs();
   }
 }
 

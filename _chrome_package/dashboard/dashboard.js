@@ -124,9 +124,10 @@ function showParentalSection(s) {
     unlocked.style.display = '';
     statusEl.textContent   = s.parentalEnabled ? t('parentalStatusActiveUnlocked') : t('parentalStatusInactiveUnlocked');
     statusEl.style.color   = s.parentalEnabled ? 'var(--color-main-green)' : 'var(--text-muted)';
-    document.getElementById('s-parental-enabled').checked = s.parentalEnabled;
-    document.getElementById('s-parental-start').value     = s.parentalStartHour;
-    document.getElementById('s-parental-end').value       = s.parentalEndHour;
+    document.getElementById('s-parental-enabled').checked  = s.parentalEnabled;
+    document.getElementById('s-parental-start').value      = s.parentalStartTime;
+    document.getElementById('s-parental-end').value        = s.parentalEndTime;
+    document.getElementById('s-parental-timezone').value   = s.parentalTimezone;
   }
 
   // Kinderschutz-Filterbereich im Filter-Tab mit sperren/entsperren
@@ -260,8 +261,9 @@ function bindParentalEvents() {
   // Einstellungen speichern
   document.getElementById('btn-parental-save').addEventListener('click', async () => {
     await setSetting('parentalEnabled',   document.getElementById('s-parental-enabled').checked);
-    await setSetting('parentalStartHour', parseInt(document.getElementById('s-parental-start').value));
-    await setSetting('parentalEndHour',   parseInt(document.getElementById('s-parental-end').value));
+    await setSetting('parentalStartTime', document.getElementById('s-parental-start').value    || '08:00');
+    await setSetting('parentalEndTime',   document.getElementById('s-parental-end').value      || '20:00');
+    await setSetting('parentalTimezone',  document.getElementById('s-parental-timezone').value || 'Europe/Berlin');
     const newPass = document.getElementById('s-parental-new-pass').value;
     if (newPass) {
       await setSetting('parentalPasswordHash', await hashPassword(newPass));
@@ -275,8 +277,8 @@ function bindParentalEvents() {
     if (!confirm(t('parentalConfirmRemove'))) return;
     await setSetting('parentalEnabled',      false);
     await setSetting('parentalPasswordHash', '');
-    await setSetting('parentalStartHour',    8);
-    await setSetting('parentalEndHour',      20);
+    await setSetting('parentalStartTime',    '08:00');
+    await setSetting('parentalEndTime',      '20:00');
     parentalUnlocked = false;
     showParentalSection(await getSettings());
   });
