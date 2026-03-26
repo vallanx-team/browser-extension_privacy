@@ -9,6 +9,15 @@ const PRIVACY_RULE_ID_DNT = 1;
 const PRIVACY_RULE_ID_UA  = 2;
 const PRIVACY_RULE_ID_IP  = 3;
 
+// Content Blocking Rule IDs (reserved 4-6)
+const CONTENT_RULE_ID_MEDIA = 4;
+const CONTENT_RULE_ID_FONTS = 5;
+const CONTENT_RULE_ID_PING  = 6;
+
+// Per-site JS blocking Rule IDs (reserved 7-8)
+const CONTENT_RULE_ID_JS_SCRIPTS = 7;
+const CONTENT_RULE_ID_JS_CSP     = 8;
+
 // Blocking rules start at ID 100
 const BLOCK_RULE_ID_START = 100;
 
@@ -18,7 +27,15 @@ async function initPrivacyHeaders() {
   const settings = await getSettings();
   const rules = [];
 
+  // Per-site DNT overrides
+  const dntOverrideOff = Object.entries(settings.siteOverrides)
+    .filter(([, v]) => v.dntEnabled === false).map(([d]) => d);
+  const dntOverrideOn  = Object.entries(settings.siteOverrides)
+    .filter(([, v]) => v.dntEnabled === true).map(([d]) => d);
+
   if (settings.dntEnabled) {
+    const condition = { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'] };
+    if (dntOverrideOff.length > 0) condition.excludedInitiatorDomains = dntOverrideOff;
     rules.push({
       id: PRIVACY_RULE_ID_DNT,
       priority: 1,
@@ -29,8 +46,24 @@ async function initPrivacyHeaders() {
           { header: 'Sec-GPC', operation: 'set', value: '1' }
         ]
       },
-      // No urlFilter needed — empty condition matches all URLs
-      condition: { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'] }
+      condition
+    });
+  } else if (dntOverrideOn.length > 0) {
+    // Global DNT aus, aber einzelne Sites haben es explizit aktiviert
+    rules.push({
+      id: PRIVACY_RULE_ID_DNT,
+      priority: 1,
+      action: {
+        type: 'modifyHeaders',
+        requestHeaders: [
+          { header: 'DNT',     operation: 'set', value: '1' },
+          { header: 'Sec-GPC', operation: 'set', value: '1' }
+        ]
+      },
+      condition: {
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'],
+        initiatorDomains: dntOverrideOn
+      }
     });
   }
 
@@ -60,6 +93,92 @@ async function initPrivacyHeaders() {
 
   await chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: [PRIVACY_RULE_ID_DNT, PRIVACY_RULE_ID_UA, PRIVACY_RULE_ID_IP],
+    addRules: rules
+  });
+}
+
+// ─── Content Type Rules (media, fonts, ping) ───────────────────────────────
+
+async function rebuildContentRules() {
+  const s = await getSettings();
+  const rules = [];
+
+  // lowBandwidth forces both media and font blocking
+  if (s.blockMedia || s.lowBandwidth) {
+    rules.push({
+      id: CONTENT_RULE_ID_MEDIA,
+      priority: 1,
+      action: { type: 'block' },
+      condition: { resourceTypes: ['image', 'media'] }
+    });
+  }
+
+  if (s.blockFonts || s.lowBandwidth) {
+    rules.push({
+      id: CONTENT_RULE_ID_FONTS,
+      priority: 1,
+      action: { type: 'block' },
+      condition: { resourceTypes: ['font'] }
+    });
+  }
+
+  // disableHyperlinkAudit: block <a ping="..."> requests at network level
+  if (s.disableHyperlinkAudit) {
+    rules.push({
+      id: CONTENT_RULE_ID_PING,
+      priority: 1,
+      action: { type: 'block' },
+      condition: { resourceTypes: ['ping'] }
+    });
+  }
+
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: [CONTENT_RULE_ID_MEDIA, CONTENT_RULE_ID_FONTS, CONTENT_RULE_ID_PING],
+    addRules: rules
+  });
+}
+
+// ─── Per-Site JS Blocking ──────────────────────────────────────────────────
+
+async function rebuildJsBlockRules() {
+  const s = await getSettings();
+  const rules = [];
+
+  const blockedDomains = Object.entries(s.siteOverrides)
+    .filter(([, v]) => v.blockJs)
+    .map(([domain]) => domain);
+
+  if (blockedDomains.length > 0) {
+    // Block external script requests initiated from blocked domains
+    rules.push({
+      id: CONTENT_RULE_ID_JS_SCRIPTS,
+      priority: 1,
+      action: { type: 'block' },
+      condition: {
+        resourceTypes: ['script'],
+        initiatorDomains: blockedDomains
+      }
+    });
+
+    // Block inline scripts via CSP injection on page responses
+    rules.push({
+      id: CONTENT_RULE_ID_JS_CSP,
+      priority: 1,
+      action: {
+        type: 'modifyHeaders',
+        responseHeaders: [
+          { header: 'Content-Security-Policy', operation: 'set', value: "script-src 'none'" }
+        ]
+      },
+      condition: {
+        resourceTypes: ['main_frame', 'sub_frame'],
+        requestDomains: blockedDomains
+      }
+    });
+  }
+
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: [CONTENT_RULE_ID_JS_SCRIPTS, CONTENT_RULE_ID_JS_CSP],
     addRules: rules
   });
 }
@@ -231,13 +350,21 @@ async function blockAllTabs() {
 
 chrome.runtime.onInstalled.addListener(async () => {
   await initPrivacyHeaders();
+  await rebuildContentRules();
+  await rebuildJsBlockRules();
   await rebuildBlockingRules();
   await applyProxy();
 });
 
 chrome.storage.onChanged.addListener(async (changes) => {
   const privacyKeys = ['dntEnabled', 'userAgentEnabled', 'userAgentString', 'ipHeaderEnabled', 'ipHeaderValue'];
-  if (privacyKeys.some(k => k in changes)) await initPrivacyHeaders();
+  if (privacyKeys.some(k => k in changes) || 'siteOverrides' in changes) await initPrivacyHeaders();
+
+  const contentKeys = ['blockMedia', 'blockFonts', 'lowBandwidth', 'disableHyperlinkAudit'];
+  if (contentKeys.some(k => k in changes)) await rebuildContentRules();
+
+  if ('siteOverrides' in changes) await rebuildJsBlockRules();
+
   if ('blocklists' in changes || 'parentalEnabled' in changes) await rebuildBlockingRules();
   if (['proxyEnabled', 'proxyHost', 'proxyPort'].some(k => k in changes)) await applyProxy();
 });

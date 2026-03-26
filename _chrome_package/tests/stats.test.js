@@ -21,10 +21,10 @@ describe('stats', () => {
     expect(calcSavedMs(null)).toBe(0);
   });
 
-  test('calcSavedMs — schätzt Zeit aus Bytes (angenommene 5 Mbit/s)', () => {
+  test('calcSavedMs — schätzt Zeit aus Bytes (angenommene 99 Mbit/s)', () => {
     const bytes = 5 * 1024 * 1024; // 5 MB
     const ms = calcSavedMs(bytes);
     expect(ms).toBeGreaterThan(0);
-    expect(ms).toBeCloseTo(8000, -2); // ~8 Sekunden bei 5 Mbit/s
+    expect(ms).toBeCloseTo(404, -2); // ~404ms bei 99 Mbit/s
   });
 });

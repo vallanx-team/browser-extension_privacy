@@ -1,5 +1,6 @@
 import { getSettings, setSetting, getStats } from '../resources/js/storage.js';
 import { formatMb, formatMs } from '../resources/js/stats.js';
+import { loadI18n, t, applyI18n } from '../resources/js/i18n.js';
 
 // ─── Parental Controls — Session State ───────────────────────────────────────
 let parentalUnlocked = false;
@@ -30,12 +31,15 @@ async function init() {
       ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
       : s.theme
   );
+  document.documentElement.setAttribute('data-colorblind', s.colorblindMode ? 'true' : 'false');
 
   const stats = await getStats();
   document.getElementById('stat-blocked-big').textContent = stats.blockedRequests.toLocaleString();
   document.getElementById('stat-mb-big').textContent = formatMb(stats.blockedMb);
   document.getElementById('stat-time-big').textContent = formatMs(stats.savedMs);
 
+  await loadI18n(s.language || 'en', s.simpleLang || false);
+  applyI18n();
   await loadNetworkLog();
   await loadSettings(s);
   await renderFilterLists();
@@ -50,7 +54,7 @@ async function loadNetworkLog() {
   const { networkLog = [] } = await chrome.storage.local.get({ networkLog: [] });
   const container = document.getElementById('network-log');
   if (networkLog.length === 0) {
-    container.textContent = 'Kein Netzwerkprotokoll vorhanden.';
+    container.textContent = t('networkLogEmpty');
     return;
   }
   container.innerHTML = networkLog.map(e => {
@@ -106,19 +110,19 @@ function showParentalSection(s) {
     setup.style.display    = '';
     locked.style.display   = 'none';
     unlocked.style.display = 'none';
-    statusEl.textContent   = 'Nicht eingerichtet';
+    statusEl.textContent   = t('parentalNotSetup');
     statusEl.style.color   = 'var(--text-muted)';
   } else if (!parentalUnlocked) {
     setup.style.display    = 'none';
     locked.style.display   = '';
     unlocked.style.display = 'none';
-    statusEl.textContent   = s.parentalEnabled ? 'Aktiv 🔒' : 'Eingerichtet, deaktiviert 🔒';
+    statusEl.textContent   = s.parentalEnabled ? t('parentalStatusActive') : t('parentalStatusInactive');
     statusEl.style.color   = s.parentalEnabled ? 'var(--color-main-green)' : 'var(--text-muted)';
   } else {
     setup.style.display    = 'none';
     locked.style.display   = 'none';
     unlocked.style.display = '';
-    statusEl.textContent   = s.parentalEnabled ? 'Aktiv 🔓' : 'Deaktiviert 🔓';
+    statusEl.textContent   = s.parentalEnabled ? t('parentalStatusActiveUnlocked') : t('parentalStatusInactiveUnlocked');
     statusEl.style.color   = s.parentalEnabled ? 'var(--color-main-green)' : 'var(--text-muted)';
     document.getElementById('s-parental-enabled').checked = s.parentalEnabled;
     document.getElementById('s-parental-start').value     = s.parentalStartHour;
@@ -136,8 +140,8 @@ function updateProxyStatus(enabled) {
   const text = document.getElementById('proxy-status-text');
   const btn = document.getElementById('s-proxy-toggle');
   dot.className = `status-dot ${enabled ? 'green' : 'red'}`;
-  text.textContent = enabled ? 'Aktiv' : 'Inaktiv';
-  btn.textContent = enabled ? 'Proxy deaktivieren' : 'Proxy aktivieren';
+  text.textContent = enabled ? t('proxyConnected') : t('proxyDisconnected');
+  btn.textContent  = enabled ? t('proxyDeactivate') : t('proxyActivate');
 }
 
 function bindSettingsEvents() {
@@ -153,9 +157,27 @@ function bindSettingsEvents() {
   };
 
   bind('setting-theme', 'theme', 'select');
-  bind('setting-colorblind', 'colorblindMode');
-  bind('setting-simple-lang', 'simpleLang');
-  bind('setting-language', 'language', 'select');
+
+  document.getElementById('setting-colorblind').addEventListener('change', e => {
+    document.documentElement.setAttribute('data-colorblind', e.target.checked ? 'true' : 'false');
+    setSetting('colorblindMode', e.target.checked);
+  });
+
+  // Sprache: speichern + sofort anwenden
+  document.getElementById('setting-language').addEventListener('change', async (e) => {
+    const s = await getSettings();
+    await loadI18n(e.target.value, s.simpleLang || false);
+    applyI18n();
+    setSetting('language', e.target.value);
+  });
+
+  // Einfache Sprache: speichern + sofort anwenden
+  document.getElementById('setting-simple-lang').addEventListener('change', async (e) => {
+    const s = await getSettings();
+    await loadI18n(s.language || 'en', e.target.checked);
+    applyI18n();
+    setSetting('simpleLang', e.target.checked);
+  });
   bind('s-fingerprint', 'antiFingerprintEnabled');
   bind('s-dnt', 'dntEnabled');
   bind('s-geo', 'geolocationSpoofEnabled');
@@ -198,12 +220,12 @@ function bindParentalEvents() {
     const msg = document.getElementById('parental-setup-msg');
     msg.style.display = '';
     if (!p1) {
-      msg.textContent = 'Bitte ein Passwort eingeben.';
+      msg.textContent = t('parentalEmptyPw');
       msg.style.color = 'var(--danger)';
       return;
     }
     if (p1 !== p2) {
-      msg.textContent = 'Passwörter stimmen nicht überein.';
+      msg.textContent = t('parentalPwMismatch');
       msg.style.color = 'var(--danger)';
       return;
     }
@@ -250,7 +272,7 @@ function bindParentalEvents() {
 
   // Kinderschutz vollständig entfernen
   document.getElementById('btn-parental-remove').addEventListener('click', async () => {
-    if (!confirm('Kinderschutz wirklich deaktivieren und Passwort entfernen?')) return;
+    if (!confirm(t('parentalConfirmRemove'))) return;
     await setSetting('parentalEnabled',      false);
     await setSetting('parentalPasswordHash', '');
     await setSetting('parentalStartHour',    8);
@@ -300,7 +322,7 @@ async function renderFilterLists() {
       <div>
         <strong>${list.name}</strong>
         <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${list.type}</span>
-        ${isParental ? '<span style="font-size:10px;color:var(--accent-2);margin-left:6px">nur aktiv bei Kinderschutz</span>' : ''}
+        ${isParental ? `<span style="font-size:10px;color:var(--accent-2);margin-left:6px">${t('parentalOnlyActive')}</span>` : ''}
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <input type="checkbox" ${list.enabled ? 'checked' : ''} data-id="${list.id}" ${locked ? 'disabled' : ''}>
