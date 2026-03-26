@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Vallanx Privacy Shield — Dashboard</title>
+	<link rel="stylesheet" href="../resources/css/styles.css">
+	<style>
+		body { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+		.header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+		.header img { height: 40px; }
+		.header h1 { font-size: 20px; font-weight: 700; color: var(--accent); }
+		.tab-content { display: none; padding-top: 20px; }
+		.tab-content.active { display: block; }
+		.tooltip { border: 1px solid #cccccc; border-radius: 4px; font-size: .785rem; color: #666; margin: 4px 0; padding: 3px 6px; font-style: italic; }
+		.licensecopy { border-radius: 6px; border: 1px solid rgba(24, 75, 91, 1); background: rgba(209, 230, 237, 1); padding: 12px; margin: 12px 0; font-size: .8rem; line-height: 1.5; font-weight: 500; text-align: left; color: rgba(86, 100, 105, .8); p {margin-bottom: 12px;}}
+		section { margin-bottom: 20px; }
+		section h2 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;
+			letter-spacing: 0.05em; margin-bottom: 12px; }
+	</style>
+</head>
+<body>
+	<div class="header">
+		<img src="../icons/icon48.png" alt="Vallanx">
+		<h1>Vallanx Privacy Shield</h1>
+	</div>
+
+	<nav class="tabs" role="tablist">
+		<button class="tab active" data-tab="statistics" data-i18n="tabStatistics">Statistics</button>
+		<button class="tab" data-tab="settings" data-i18n="tabSettings">Settings</button>
+		<button class="tab" data-tab="filter" data-i18n="tabFilter">Filter</button>
+		<button class="tab" data-tab="about" data-i18n="tabAbout">About Vallanx</button>
+	</nav>
+
+	<!-- Tab: Statistics -->
+	<div class="tab-content active" id="tab-statistics">
+		<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px">
+			<div class="card" style="text-align:center">
+				<div style="font-size:36px;font-weight:800;color:var(--accent-2)" id="stat-blocked-big">0</div>
+				<div style="color:var(--text-muted);font-size:13px" data-i18n="statsBlocked">Blocked elements</div>
+			</div>
+			<div class="card" style="text-align:center">
+				<div style="font-size:36px;font-weight:800;color:var(--color-main-green)" id="stat-mb-big">0 MB</div>
+				<div style="color:var(--text-muted);font-size:13px" data-i18n="statsMb">Saved MB</div>
+			</div>
+			<div class="card" style="text-align:center">
+				<div style="font-size:36px;font-weight:800;color:var(--color-yellow)" id="stat-time-big">0 s</div>
+				<div style="color:var(--text-muted);font-size:13px" data-i18n="statsTime">Time saved loading</div>
+			</div>
+		</div>
+		<div class="card">
+			<h2 data-i18n="networkLogTitle">Network Logs</h2>
+			<div id="network-log" style="font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;"></div>
+		</div>
+	</div>
+
+	<!-- Tab: Settings -->
+	<div class="tab-content" id="tab-settings">
+		<section>
+			<h2 data-i18n="sectionAppearance">Appearance</h2>
+			<div class="card">
+				<div class="toggle">
+					<label data-i18n="settingLanguage">Language</label>
+					<select id="setting-language" style="width:fit-content;text-align:center;">
+						<option value="de">Deutsch</option>
+						<option value="ee">Eesti keel</option>
+						<option value="en">English</option>
+						<option value="es">Español</option>
+						<option value="fr">Français</option>
+						<option value="gr">ελληνικός</option>
+						<option value="it">Italiano</option>
+						<option value="nl">Nederlands</option>
+						<option value="no">Norsk</option>
+						<option value="pl">Polski</option>
+						<option value="pt">Português</option>
+						<option value="tr">Türkçe</option>
+					</select>
+				</div>
+				<div class="toggle">
+					<label data-i18n="settingDarkMode">Dark Mode</label>
+					<select id="setting-theme" style="width:fit-content;text-align:center;">
+						<option value="auto" data-i18n="themeAuto">Automatic</option>
+						<option value="dark" data-i18n="themeDark">Dark</option>
+						<option value="light" data-i18n="themeLight">Light</option>
+					</select>
+				</div>
+				<div class="toggle">
+					<label data-i18n="settingColorblind">Colorblind mode</label>
+					<input type="checkbox" id="setting-colorblind">
+				</div>
+				<div class="toggle">
+					<label data-i18n="settingSimpleLang">Simple language</label>
+					<input type="checkbox" id="setting-simple-lang">
+				</div>
+			</div>
+		</section>
+
+		<section>
+			<h2 data-i18n="sectionPrivacy">Privacy & Spoofing</h2>
+			<div class="card">
+				<div class="toggle"><label data-i18n="fingerprintLabel">Anti-Fingerprinting</label><input type="checkbox" id="s-fingerprint"></div>
+				<div class="toggle"><label data-i18n="dntLabel">Do Not Track / Global Privacy Control</label><input type="checkbox" id="s-dnt"></div>
+				<div class="toggle"><label data-i18n="geolocationLabel">Geolocation Spoofing</label><input type="checkbox" id="s-geo"></div>
+				<div id="geo-inputs" style="display:none;margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+					<input type="number" id="s-geo-lat" data-i18n-ph="geolocationLat" placeholder="Latitude" step="0.0001">
+					<input type="number" id="s-geo-lon" data-i18n-ph="geolocationLon" placeholder="Longitude" step="0.0001">
+				</div>
+				<div class="toggle"><label data-i18n="uaChangeLabel">Change User Agent</label><input type="checkbox" id="s-ua"></div>
+				<input type="text" id="s-ua-string" placeholder="Mozilla/5.0 ..." style="margin-top:8px">
+				<div class="toggle" style="margin-top:12px"><label data-i18n="ipSpoofLabel">IP Header Manipulation</label><input type="checkbox" id="s-ip"></div>
+				<div class="tooltip" data-i18n="ipSpoofTooltip">Note: No network-based IP spoofing; only header manipulation of the IP address in browser requests (x-forward-for)</div>
+				<input type="text" id="s-ip-value" placeholder="192.168.1.1" style="margin-top:8px">
+			</div>
+		</section>
+
+		<section>
+			<h2 data-i18n="sectionContent">Content Controls</h2>
+			<div class="card">
+				<div class="toggle"><label data-i18n="jsGlobalLabel">JavaScript (global)</label><input type="checkbox" id="s-block-js"></div>
+				<div class="toggle"><label data-i18n="popupsLabel">Block pop-ups</label><input type="checkbox" id="s-block-popups"></div>
+				<div class="toggle"><label data-i18n="mediaLabel">Block media elements</label><input type="checkbox" id="s-block-media"></div>
+				<div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+					<label style="font-size:12px" data-i18n="mediaSizeLabel">From size (KB):</label>
+					<input type="number" id="s-media-size" style="width:80px" min="0">
+				</div>
+				<div class="toggle"><label data-i18n="fontsLabel">Block external fonts</label><input type="checkbox" id="s-block-fonts"></div>
+				<div class="toggle"><label data-i18n="prefetchLabel">Disable prefetch</label><input type="checkbox" id="s-prefetch"></div>
+				<div class="toggle"><label data-i18n="hyperlinkLabel">Disable hyperlink auditing</label><input type="checkbox" id="s-hyperlink"></div>
+				<div class="toggle"><label data-i18n="lowBandwidthLabel">Low bandwidth mode</label><input type="checkbox" id="s-low-bandwidth"></div>
+			</div>
+		</section>
+
+		<section>
+			<h2 data-i18n="sectionProxy">Proxy</h2>
+			<div class="card">
+				<div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
+					<input type="text" id="s-proxy-host" data-i18n-ph="proxyHostPh" placeholder="Proxy IP / Hostname">
+					<input type="text" id="s-proxy-port" placeholder="Port">
+				</div>
+				<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+					<input type="text" id="s-proxy-user" data-i18n-ph="proxyUserPh" placeholder="Username (optional)">
+					<input type="password" id="s-proxy-pass" data-i18n-ph="proxyPassPh" placeholder="Password (optional)">
+				</div>
+				<div style="display:flex;align-items:center;gap:12px">
+					<button class="btn btn-primary" id="s-proxy-toggle" data-i18n="proxyActivate">Activate proxy</button>
+					<span class="status-dot" id="proxy-status-dot"></span>
+					<span id="proxy-status-text" style="font-size:12px"></span>
+				</div>
+			</div>
+		</section>
+
+		<section>
+			<h2 data-i18n="sectionParental">Parental Controls</h2>
+			<div class="card">
+				<div class="toggle" style="margin-bottom:10px">
+					<label style="font-weight:600" data-i18n="parentalStatusLabel">Status</label>
+					<span id="parental-status-text" style="font-size:12px;color:var(--text-muted)"></span>
+				</div>
+
+				<!-- No Password set: Configure -->
+				<div id="parental-setup">
+					<p style="font-size:12px;color:var(--text-muted);margin-bottom:8px" data-i18n="parentalSetupDesc">Protect settings with a password to prevent unauthorized changes.</p>
+					<input type="password" id="s-parental-pass1" data-i18n-ph="parentalPass1Ph" placeholder="Set password" style="margin-bottom:6px">
+					<input type="password" id="s-parental-pass2" data-i18n-ph="parentalPass2Ph" placeholder="Repeat password" style="margin-bottom:8px">
+					<button class="btn btn-primary" style="width:100%" id="btn-parental-setup" data-i18n="parentalSetupBtn">Set up parental controls</button>
+					<p id="parental-setup-msg" style="font-size:11px;margin-top:6px;display:none"></p>
+				</div>
+
+				<!-- Password is set, locked: Unlock -->
+				<div id="parental-locked" style="display:none">
+					<div style="display:flex;gap:8px">
+						<input type="password" id="s-parental-unlock" data-i18n-ph="parentalUnlockPh" placeholder="Password" style="flex:1">
+						<button class="btn btn-primary" id="btn-parental-unlock" data-i18n="parentalUnlockBtn">Unlock</button>
+					</div>
+					<p id="parental-unlock-msg" style="font-size:11px;margin-top:4px;color:var(--danger);display:none" data-i18n="parentalWrongPw">Wrong password.</p>
+				</div>
+
+				<!-- Unlocked: Settings -->
+				<div id="parental-unlocked" style="display:none">
+					<div class="toggle">
+						<label data-i18n="parentalActiveLabel">Parental control active</label>
+						<input type="checkbox" id="s-parental-enabled">
+					</div>
+					<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+						<div>
+							<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalFromLabel">Allowed from:</label>
+							<input type="time" id="s-parental-start" style="width:100%">
+						</div>
+						<div>
+							<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalToLabel">Allowed until:</label>
+							<input type="time" id="s-parental-end" style="width:100%">
+						</div>
+					</div>
+					<div style="margin-top:8px">
+						<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalTimezoneLabel">Timezone:</label>
+						<select id="s-parental-timezone" style="width:100%">
+							<optgroup label="Europe">
+								<option value="Europe/Berlin">Europe/Berlin (DE, AT, CH)</option>
+								<option value="Europe/London">Europe/London (GB, IE)</option>
+								<option value="Europe/Paris">Europe/Paris (FR)</option>
+								<option value="Europe/Madrid">Europe/Madrid (ES)</option>
+								<option value="Europe/Rome">Europe/Rome (IT)</option>
+								<option value="Europe/Amsterdam">Europe/Amsterdam (NL)</option>
+								<option value="Europe/Brussels">Europe/Brussels (BE)</option>
+								<option value="Europe/Warsaw">Europe/Warsaw (PL)</option>
+								<option value="Europe/Prague">Europe/Prague (CZ, SK)</option>
+								<option value="Europe/Vienna">Europe/Vienna (AT)</option>
+								<option value="Europe/Zurich">Europe/Zurich (CH)</option>
+								<option value="Europe/Stockholm">Europe/Stockholm (SE)</option>
+								<option value="Europe/Oslo">Europe/Oslo (NO)</option>
+								<option value="Europe/Copenhagen">Europe/Copenhagen (DK)</option>
+								<option value="Europe/Helsinki">Europe/Helsinki (FI, EE)</option>
+								<option value="Europe/Riga">Europe/Riga (LV)</option>
+								<option value="Europe/Vilnius">Europe/Vilnius (LT)</option>
+								<option value="Europe/Lisbon">Europe/Lisbon (PT)</option>
+								<option value="Europe/Athens">Europe/Athens (GR)</option>
+								<option value="Europe/Bucharest">Europe/Bucharest (RO)</option>
+								<option value="Europe/Budapest">Europe/Budapest (HU)</option>
+								<option value="Europe/Istanbul">Europe/Istanbul (TR)</option>
+								<option value="Europe/Kyiv">Europe/Kyiv (UA)</option>
+								<option value="Europe/Moscow">Europe/Moscow (RU)</option>
+							</optgroup>
+							<optgroup label="Americas">
+								<option value="America/New_York">America/New York (US East)</option>
+								<option value="America/Chicago">America/Chicago (US Central)</option>
+								<option value="America/Denver">America/Denver (US Mountain)</option>
+								<option value="America/Los_Angeles">America/Los Angeles (US West)</option>
+								<option value="America/Toronto">America/Toronto (CA East)</option>
+								<option value="America/Vancouver">America/Vancouver (CA West)</option>
+								<option value="America/Sao_Paulo">America/Sao Paulo (BR)</option>
+								<option value="America/Buenos_Aires">America/Argentina/Buenos Aires (AR)</option>
+								<option value="America/Mexico_City">America/Mexico City (MX)</option>
+							</optgroup>
+							<optgroup label="Asia / Pacific">
+								<option value="Asia/Dubai">Asia/Dubai (AE)</option>
+								<option value="Asia/Kolkata">Asia/Kolkata (IN)</option>
+								<option value="Asia/Singapore">Asia/Singapore (SG)</option>
+								<option value="Asia/Shanghai">Asia/Shanghai (CN)</option>
+								<option value="Asia/Tokyo">Asia/Tokyo (JP)</option>
+								<option value="Asia/Seoul">Asia/Seoul (KR)</option>
+								<option value="Australia/Sydney">Australia/Sydney (AU East)</option>
+								<option value="Pacific/Auckland">Pacific/Auckland (NZ)</option>
+							</optgroup>
+							<optgroup label="UTC">
+								<option value="UTC">UTC</option>
+							</optgroup>
+						</select>
+						<p style="font-size:11px;color:var(--text-muted);margin-top:4px" data-i18n="parentalTimezoneSource">Time from internet server</p>
+					</div>
+					<div style="margin-top:10px">
+						<label style="font-size:12px;display:block;margin-bottom:4px" data-i18n="parentalNewPwLabel">New password (empty = unchanged):</label>
+						<input type="password" id="s-parental-new-pass" data-i18n-ph="parentalNewPassPh" placeholder="Neues Passwort">
+					</div>
+					<div style="display:flex;gap:8px;margin-top:10px">
+						<button class="btn btn-primary" style="flex:1" id="btn-parental-save" data-i18n="save">Save</button>
+						<button class="btn btn-ghost" id="btn-parental-lock" data-i18n="parentalLockBtn">Lock</button>
+					</div>
+					<button class="btn btn-danger" style="width:100%;margin-top:8px;font-size:11px" id="btn-parental-remove" data-i18n="parentalRemoveBtn">Remove parental controls &amp; password</button>
+				</div>
+			</div>
+		</section>
+
+		<section>
+			<h2 data-i18n="sectionExportImport">Export / Import</h2>
+			<div class="card" style="display:flex;gap:8px">
+				<button class="btn btn-ghost" id="btn-export" data-i18n="exportBtn">Export settings</button>
+				<button class="btn btn-ghost" id="btn-import" data-i18n="importBtn">Import settings</button>
+				<input type="file" id="import-file" accept=".json" style="display:none">
+			</div>
+		</section>
+	</div>
+
+	<!-- Tab: Filter -->
+	<div class="tab-content" id="tab-filter">
+		<section>
+			<h2 data-i18n="sectionAddList">Add Blocklist</h2>
+			<div class="card">
+				<div style="display:flex;gap:8px;margin-bottom:8px">
+					<input type="text" id="filter-name" data-i18n-ph="filterListNamePh" placeholder="List name">
+					<select id="filter-type">
+						<option value="block" data-i18n="filterBlocklist">Blocklist</option>
+						<option value="allow" data-i18n="filterAllowlist">Allowlist</option>
+					</select>
+				</div>
+				<div style="display:flex;gap:8px;margin-bottom:8px">
+					<input type="url" id="filter-url" data-i18n-ph="filterUrlPh" placeholder="https://... list URL" style="flex:1">
+					<button class="btn btn-ghost" id="btn-load-url" data-i18n="filterLoadBtn">Load</button>
+				</div>
+				<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+					<button class="btn btn-ghost" id="btn-load-file" data-i18n="filterFileBtn">Choose file</button>
+					<input type="file" id="filter-file" accept=".txt,.ubs" style="display:none">
+					<span id="filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
+				</div>
+				<textarea id="filter-text" rows="5" data-i18n-ph="filterRulesPh" placeholder="Enter rules directly..."></textarea>
+				<div style="margin-top:8px;display:flex;justify-content:flex-end">
+					<button class="btn btn-primary" id="btn-add-list" data-i18n="filterSaveBtn">Save list</button>
+				</div>
+				<p id="filter-add-error" style="display:none;color:var(--color-red);font-size:12px;margin-top:6px"></p>
+			</div>
+		</section>
+
+		<section>
+			<h2 data-i18n="sectionParentalFilter">Parental Filter List</h2>
+			<div class="card">
+				<div id="parental-filter-locked-msg" style="display:none">
+					<p style="font-size:12px;color:var(--text-muted)" data-i18n="parentalFilterLockedMsg">
+						🔒 Parental controls are set up. Please unlock first in the Settings tab to edit the filter list.
+					</p>
+				</div>
+				<div id="parental-filter-form">
+					<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px" data-i18n="parentalFilterDesc">
+						This list is only active when parental controls are enabled in the Settings tab.
+					</p>
+					<div style="display:flex;gap:8px;margin-bottom:8px">
+						<input type="url" id="parental-filter-url" data-i18n-ph="parentalFilterUrlPh" placeholder="https://... URL zur Jugendschutzliste" style="flex:1">
+						<button class="btn btn-ghost" id="btn-parental-load-url" data-i18n="filterLoadBtn">Load</button>
+					</div>
+					<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+						<button class="btn btn-ghost" id="btn-parental-load-file" data-i18n="filterFileBtn">Choose file</button>
+						<input type="file" id="parental-filter-file" accept=".txt,.ubs" style="display:none">
+						<span id="parental-filter-file-name" style="font-size:12px;color:var(--text-muted)"></span>
+					</div>
+					<textarea id="parental-filter-text" rows="4" data-i18n-ph="filterRulesPh" placeholder="Enter rules directly..."></textarea>
+					<div style="margin-top:8px;display:flex;justify-content:flex-end">
+						<button class="btn btn-primary" id="btn-parental-add-list" data-i18n="parentalFilterSaveBtn">Save parental filter</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section>
+			<h2 data-i18n="sectionActiveLists">Active Lists</h2>
+			<div id="filter-list-container"></div>
+		</section>
+	</div>
+
+	<!-- Tab: About Vallanx -->
+	<div class="tab-content" id="tab-about">
+		<div class="card" style="text-align:center;padding:32px">
+			<img src="../resources/img/vallanx_400.png" alt="Vallanx" style="height:30px;margin-bottom:36px">
+			<h2 style="font-size:18px;color:var(--accent)">Vallanx Privacy Shield</h2>
+			<p style="color:var(--text-muted);margin:8px 0"><span data-i18n="released">Released</span>: 03/2026 | <span data-i18n="version">Version</span>: 0.2.1</p>
+			<p style="color:var(--text-muted);margin:8px 0" data-i18n="aboutLicense">License: MIT Open Source</p>
+
+			<div class="licensecopy">
+				<p>By using this browser extension you acknowledge and accept the following terms. They are intedend to be complete, plain, and proportionate to the nature of the tool.</p>
+				<p>You may us this browser extension for any lawful purpose.</p>
+				<p>No may buiild with it, on top of it, or in reference to it.</p>
+				<p>The functionality is not guaranteed, as this tool is provided for free and based on community work. This includs availability, correctness, continuity, or fitness for any purpose.</p>
+				<p>Access to this tool is not conditioned on approval.</p>
+				<p>Nothing here should be assumed reversible, recoverable, or preserved.</p>
+				<p>There is no support obligation, service commitment, or warranty of any kind. Nonetheless, issues can be reported to the public GitHub repository.</p>
+				<p>You are responsible for what you do, what you create, and what follows from either.</p>
+				<p>There are no additional terms.</p>
+				<p>Vallanx is a protected trademark. Use of the trademark, name, or any association therewith is permitted only with the written consent of Vallanx. All rights reserved.</p>
+				<p><a href="https://storyset.com/technology" style="color: rgba(86, 100, 105, .8); text-decoration: none;">Technology illustrations by Storyset</a></p>
+			</div>
+
+			<div style="display:flex;justify-content:center;gap:16px;margin-top:20px">
+				<a href="https://github.com/vallanx-team/browser-extension_privacy" target="_blank" class="btn btn-ghost" data-i18n="aboutGithub">GitHub</a>
+				<a href="https://www.vallanx.com/privacy-shield" target="_blank" class="btn btn-primary" data-i18n="aboutSupport">About Privacy Shield</a>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="dashboard.js"></script>
+</body>
+</html>

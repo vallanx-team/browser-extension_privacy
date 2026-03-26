@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Blocked — Vallanx Privacy Shield</title>
+  <link rel="stylesheet" href="../resources/css/styles.css">
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center; }
+    .blocked-card { max-width:480px; padding:40px; }
+    .shield-icon { font-size:64px; margin-bottom:16px; }
+    h1 { color:var(--color-yellow); font-size:24px; margin-bottom:12px; }
+    p { color:var(--text-muted); }
+    .blocked-sub { font-size:13px; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="blocked-card card">
+    <!-- <div class="shield-icon">🔒</div> -->
+    <img src="do_not_enter.gif" style="width: 220px; display: block; margin: auto;" alt="Technology illustrations by Storyset">
+    <h1 data-i18n="parentalBlockedTitle">Access Restricted</h1>
+    <p data-i18n="parentalBlockedMsg">This page is restricted by parental controls.</p>
+    <p class="blocked-sub" data-i18n="parentalBlockedSub">Please ask an adult if you need access.</p>
+    <button class="btn btn-ghost" id="btn-back" data-i18n="blockedBack" style="margin-top:24px">← Back</button>
+  </div>
+  <script type="module" src="blocked-parental.js"></script>
+</body>
+</html>
