@@ -75,7 +75,7 @@ async function initPrivacyHeaders() {
         type: 'modifyHeaders',
         requestHeaders: [{ header: 'User-Agent', operation: 'set', value: settings.userAgentString }]
       },
-      condition: { resourceTypes: ['main_frame'] }
+      condition: { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'] }
     });
   }
 
@@ -87,7 +87,7 @@ async function initPrivacyHeaders() {
         type: 'modifyHeaders',
         requestHeaders: [{ header: 'X-Forwarded-For', operation: 'set', value: settings.ipHeaderValue }]
       },
-      condition: { resourceTypes: ['main_frame', 'xmlhttprequest'] }
+      condition: { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'] }
     });
   }
 

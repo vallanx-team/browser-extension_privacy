@@ -1,4 +1,4 @@
-# ![[icon_transparent.png|23]] Vallanx Privacy Shield
+# Vallanx Privacy Shield
 
 
 Vallanx Privacy Shield is a browser extension that blocks trackers, protects your browser fingerprint, and gives you full control over what websites can do.
@@ -23,7 +23,7 @@ Vallanx Privacy Shield is a browser extension that blocks trackers, protects you
 
 ## Quick Start
 
-After installation you will find the pop-up of the Vallanx Privacy Shield extension in your extensions overview. Click on the browser extension icon ![[icon_transparent.png|27]] to open the pop-up.
+After installation you will find the pop-up of the Vallanx Privacy Shield extension in your extensions overview. Click on the browser extension shield icon to open the pop-up.
 
 
 ### 1. The Pop-Up
@@ -47,7 +47,7 @@ This button will open the dashboard with its four tabs "Statistics", "Settings",
 
 ### 2. Configure your settings
 
-To configure your global settings, like your preferred language, click on the browser extension icon ![[icon_transparent.png|23]] and then click on "Open Dashboard". Click on the tab "Settings" to find all (global) settings, you want to configure. Below you will find a quick overview of the options
+To configure your global settings, like your preferred language, click on the browser extension icon shield icon and then click on "Open Dashboard". Click on the tab "Settings" to find all (global) settings, you want to configure. Below you will find a quick overview of the options
 
 On the tab "Filter" you can enter own blocklist rules, upload a blocklist file or enter a direct url to a blocklist.
 
@@ -212,7 +212,7 @@ Runs 25 unit tests covering the UBS parser, statistics engine, and i18n helper.
 ---
 
 🗓️ Release: March 2025
-🔖 Version: 0.2.1
+🔖 Version: 0.2.2
 💪 Supporter: www.vallanx.com
 
 ## License
