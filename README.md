@@ -1,4 +1,4 @@
-# Vallanx Privacy Shield
+# <img height="60px" src="./icon_transparent.png" alt="Vallanx Privacy Shield" title="Vallanx Privacy Shield"> Vallanx Privacy Shield
 
 
 Vallanx Privacy Shield is a browser extension that blocks trackers, protects your browser fingerprint, and gives you full control over what websites can do.
