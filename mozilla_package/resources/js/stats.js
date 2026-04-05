@@ -1,6 +1,13 @@
+export function formatElements(blocked) {
+	if (blocked > 1000) return `${(blocked / 1000).toFixed(1)}k`;
+	return `${blocked}`;
+}
+
 export function formatMb(mb) {
   if (mb < 1) return `${Math.round(mb * 1024)} KB`;
-  return `${mb.toFixed(2)}`;
+  if (mb > 1024) return `${Math.round(mb / 1024).toFixed(1)} GB`;
+  if (mb > 1048576) return `${Math.round(mb / 1048576).toFixed(1)} TB`;
+  return `${mb.toFixed(0)} MB`;
 }
 
 export function formatMs(ms) {

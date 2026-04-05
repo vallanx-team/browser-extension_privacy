@@ -66,7 +66,7 @@
 	"filterFileBtn":           { "message": "Choisir un fichier" },
 
 	"statsBlocked":            { "message": "Bloqué" },
-	"statsMb":                 { "message": "Économisé (Mo)" },
+	"statsMb":                 { "message": "Économisé (Données)" },
 	"statsTime":               { "message": "Temps gagné" },
 
 	"reportSuspicious":        { "message": "Signaler la page" },

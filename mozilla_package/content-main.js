@@ -99,7 +99,13 @@
 
     // Popup Blocking
     if (s.blockPopups) {
-      window.open = function () { return null; };
+      try {
+        Object.defineProperty(window, 'open', {
+          value: function () { return null; },
+          configurable: true,
+          writable: true,
+        });
+      } catch (_) {}
     }
 
     // Anti-Fingerprinting

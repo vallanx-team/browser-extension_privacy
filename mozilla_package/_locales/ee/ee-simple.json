@@ -66,7 +66,7 @@
 	"filterFileBtn":           { "message": "Vali fail" },
 
 	"statsBlocked":            { "message": "Blokeeritud" },
-	"statsMb":                 { "message": "Säästetud (MB)" },
+	"statsMb":                 { "message": "Säästetud (Andmed)" },
 	"statsTime":               { "message": "Säästetud aeg" },
 
 	"reportSuspicious":        { "message": "Teata lehest" },

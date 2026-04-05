@@ -4,7 +4,7 @@
  */
 const DEFAULTS = {
   // Metadaten
-  language: 'de',
+  language: 'en',
   theme: 'auto',           // 'light' | 'dark' | 'auto'
   colorblindMode: false,
   simpleLang: false,

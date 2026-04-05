@@ -66,7 +66,7 @@
 	"filterFileBtn":           { "message": "Datei wählen" },
 
 	"statsBlocked":            { "message": "Blockiert" },
-	"statsMb":                 { "message": "Eingespart (MB)" },
+	"statsMb":                 { "message": "Eingesparte Daten" },
 	"statsTime":               { "message": "Zeit gespart" },
 
 	"reportSuspicious":        { "message": "Seite melden" },

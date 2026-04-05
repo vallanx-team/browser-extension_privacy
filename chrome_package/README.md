@@ -211,8 +211,8 @@ Runs 25 unit tests covering the UBS parser, statistics engine, and i18n helper.
 
 ---
 
-🗓️ Release: March 2025
-🔖 Version: 0.2.2
+🗓️ Release: April 2025
+🔖 Version: 0.2.3
 💪 Supporter: www.vallanx.com
 
 ## License

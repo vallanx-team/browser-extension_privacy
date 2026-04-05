@@ -1,5 +1,5 @@
 import { getSettings, setSetting, getStats } from '../resources/js/storage.js';
-import { formatMb, formatMs } from '../resources/js/stats.js';
+import { formatElements, formatMb, formatMs } from '../resources/js/stats.js';
 import { loadI18n, t, applyI18n } from '../resources/js/i18n.js';
 
 async function init() {
@@ -24,7 +24,8 @@ function applyTheme(s) {
 
 async function loadStats() {
   const stats = await getStats();
-  document.getElementById('stat-blocked').textContent = stats.blockedRequests.toLocaleString();
+  // document.getElementById('stat-blocked').textContent = stats.blockedRequests.toLocaleString();
+  document.getElementById('stat-blocked').textContent = formatElements(stats.blockedRequests).toLocaleString();
   document.getElementById('stat-mb').textContent = formatMb(stats.blockedMb);
   document.getElementById('stat-time').textContent = formatMs(stats.savedMs);
 }
