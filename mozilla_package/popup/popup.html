@@ -1,80 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>Vallanx Privacy Shield</title>
-  <link rel="stylesheet" href="../resources/css/styles.css">
-  <style>
-    body { width: 320px; padding: 16px; }
-    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-    .header img { width: 32px; height: 32px; }
-    .header h1 { font-size: 15px; font-weight: 600; color: var(--accent); }
-    .quick-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .stat-box { background: var(--surface); border-radius: 8px; padding: 10px; text-align: center; border: 1px solid var(--border); }
-    .stat-value { font-size: 18px; font-weight: 700; color: var(--accent-2); }
-    .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-    .actions { display: flex; flex-direction: column; gap: 8px; }
-    .open-dashboard { border-radius: 6px; align-items: center; border: 1px solid #999; background: rgba(55,55,55,.6); text-align: center; margin-top:12px; padding: 4px 16px 8px 16px; cursor:pointer; gap: 6px; transition: .15s all; }
-    .open-dashboard:hover { opacity: .9; transition: .15s all;}
-    .sitelabel { display: block; width: 100%; border: 1px solid #cccccc; border-radius: 4px; font-size: .725rem; font-weight:600; color:var(--text-muted); margin: 6px 0 0px 0; padding: 2px 4px 4px 4px; text-align: center;}
-    a.link { color: var(--accent-2); text-decoration: none; font-size: 12px; }
-    a.dashboardlink { color: #fff; text-decoration: none; font-size: 12px; font-weight: 500; }
-  </style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Vallanx Privacy Shield</title>
+	<link rel="stylesheet" href="../resources/css/styles.css">
+	<style>
+		body { width: 320px; padding: 16px; }
+		.header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+		.header img { width: 32px; height: 32px; }
+		.header h1 { font-size: 15px; font-weight: 600; color: var(--accent); }
+		.quick-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+		.stat-box { background: var(--surface); border-radius: 8px; padding: 10px; text-align: center; border: 1px solid var(--border); }
+		.stat-value { font-size: 18px; font-weight: 700; color: var(--accent-2); }
+		.stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+		.actions { display: flex; flex-direction: column; gap: 8px; }
+		.open-dashboard { border-radius: 6px; align-items: center; border: 1px solid #999; background: rgba(55,55,55,.6); text-align: center; margin-top:12px; padding: 4px 16px 8px 16px; cursor:pointer; gap: 6px; transition: .15s all; }
+		.open-dashboard:hover { opacity: .9; transition: .15s all;}
+		.sitelabel { display: block; width: 100%; border: 1px solid #cccccc; border-radius: 4px; font-size: .725rem; font-weight:600; color:var(--text-muted); margin: 6px 0 0px 0; padding: 2px 4px 4px 4px; text-align: center;}
+		a.link { color: var(--accent-2); text-decoration: none; font-size: 12px; }
+		a.dashboardlink { color: #fff; text-decoration: none; font-size: 12px; font-weight: 500; }
+	</style>
 </head>
 <body>
-  <div class="header">
-    <img src="../icons/icon48.png" alt="Logo">
-    <h1 id="ext-name">Vallanx Privacy Shield</h1>
-    <span class="status-dot green" id="status-dot" title="active"></span>
-  </div>
+	<div class="header">
+		<img src="../icons/icon48.png" alt="Logo">
+		<h1 id="ext-name">Vallanx Privacy Shield</h1>
+		<span class="status-dot green" id="status-dot" title="active"></span>
+	</div>
 
-  <div class="quick-stats">
-    <div class="stat-box">
-      <div class="stat-value" id="stat-blocked">0</div>
-      <div class="stat-label" data-i18n="statsBlockedShort">Blocked</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="stat-mb">0</div>
-      <div class="stat-label" data-i18n="statsMbShort">Saved</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="stat-time">0s</div>
-      <div class="stat-label" data-i18n="statsTimeShort">Faster</div>
-    </div>
-  </div>
+	<div class="quick-stats">
+		<div class="stat-box">
+			<div class="stat-value" id="stat-blocked">0</div>
+			<div class="stat-label" data-i18n="statsBlockedShort">Blocked</div>
+		</div>
+		<div class="stat-box">
+			<div class="stat-value" id="stat-mb">0</div>
+			<div class="stat-label" data-i18n="statsMbShort">Saved</div>
+		</div>
+		<div class="stat-box">
+			<div class="stat-value" id="stat-time">0s</div>
+			<div class="stat-label" data-i18n="statsTimeShort">Faster</div>
+		</div>
+	</div>
 
-  <div class="actions">
-    <!-- <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px;padding:0 2px" id="site-label"></div> -->
-    <div class="sitelabel" id="site-label"></div>
-    
-    <div class="toggle">
-      <span data-i18n="fingerprintLabelSpecific">Anti-Fingerprinting on this site</span>
-      <input type="checkbox" id="toggle-fingerprint">
-    </div>
-    
-    <div class="toggle">
-      <span data-i18n="dntLabelSpecific">"Do Not Track" / GPC on this site</span>
-      <input type="checkbox" id="toggle-dnt">
-    </div>
+	<div class="actions">
+		<!-- <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px;padding:0 2px" id="site-label"></div> -->
+		<div class="sitelabel" id="site-label"></div>
 
-    <div class="toggle" id="site-js-row">
-      <span data-i18n="jsSpecificLabel">Block JavaScript for this site</span>
-      <input type="checkbox" id="toggle-site-js">
-    </div>
-    <div class="toggle" id="site-popups-row">
-      <span data-i18n="popupsLabelSpecific">Block pop-ups on this site</span>
-      <input type="checkbox" id="toggle-site-popups">
-    </div>
-    <button class="btn btn-danger" id="btn-report" style="font-size:12px;text-align:center;justify-content:center;">
-      ⚠ <span data-i18n="reportSuspicious">Report suspicious website</span>
-    </button>
-  </div>
+		<div class="toggle">
+			<span data-i18n="fingerprintLabelSpecific">Anti-Fingerprinting on this site</span>
+			<input type="checkbox" id="toggle-fingerprint">
+		</div>
 
-  <div class="open-dashboard">
-    <a href="#" class="dashboardlink" id="btn-dashboard">⚙ <span data-i18n="openDashboard">Open Dashboard</span></a>
-  </div>
+		<div class="toggle">
+			<span data-i18n="dntLabelSpecific">"Do Not Track" / GPC on this site</span>
+			<input type="checkbox" id="toggle-dnt">
+		</div>
 
-  <script type="module" src="popup.js"></script>
+		<div class="toggle" id="site-js-row">
+			<span data-i18n="jsSpecificLabel">Block JavaScript for this site</span>
+			<input type="checkbox" id="toggle-site-js">
+		</div>
+		<div class="toggle" id="site-popups-row">
+			<span data-i18n="popupsLabelSpecific">Block pop-ups on this site</span>
+			<input type="checkbox" id="toggle-site-popups">
+		</div>
+		<button class="btn btn-danger" id="btn-report" style="font-size:12px;text-align:center;justify-content:center;">
+			⚠ <span data-i18n="reportSuspicious">Report suspicious website</span>
+		</button>
+	</div>
+
+	<a href="#" class="dashboardlink" id="btn-dashboard">
+		<div class="open-dashboard">
+			⚙ <span data-i18n="openDashboard">Open Dashboard</span>
+		</div>
+	</a>
+
+	<script type="module" src="popup.js"></script>
 </body>
 </html>
