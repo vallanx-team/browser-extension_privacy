@@ -129,7 +129,7 @@
 	"statsMb":                    { "message": "Gesparte Daten" },
 	"statsTime":                  { "message": "Gesparte Ladezeit" },
 	"statsBlockedShort":          { "message": "Geblockt" },
-	"statsMbShort":               { "message": "Daten eingespart" },
+	"statsMbShort":               { "message": "Eingespart" },
 	"statsTimeShort":             { "message": "Schneller" },
 	"aboutLicense":               { "message": "Lizenz: MIT Open Source" },
 	"aboutGithub":                { "message": "GitHub Repository" },
