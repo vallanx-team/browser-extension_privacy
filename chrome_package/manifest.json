@@ -45,9 +45,6 @@
     "alarms"
   ],
   "host_permissions": ["<all_urls>"],
-  "declarative_net_request": {
-    "rule_resources": []
-  },
   "web_accessible_resources": [
     {
       "resources": ["blocked/blocked.html", "blocked/blocked-parental.html", "resources/css/styles.css"],
