@@ -109,6 +109,8 @@
 	"filterListNamePh":           { "message": "Nome lista" },
 	"filterUrlPh":                { "message": "https://... URL lista" },
 	"filterLoadBtn":              { "message": "Carica" },
+	"filterLoadBtnAbort":         { "message": "Annulla" },
+	"filterLoadedLines":          { "message": "righe" },
 	"filterFileBtn":              { "message": "Scegli file" },
 	"filterRulesPh":              { "message": "Inserisci regole direttamente..." },
 	"filterSaveBtn":              { "message": "Salva lista" },

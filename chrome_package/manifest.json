@@ -42,6 +42,7 @@
     "declarativeNetRequestWithHostAccess",
     "proxy",
     "webRequest",
+    "webNavigation",
     "alarms"
   ],
   "host_permissions": ["<all_urls>"],

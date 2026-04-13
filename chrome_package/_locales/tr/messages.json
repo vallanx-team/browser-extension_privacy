@@ -109,6 +109,8 @@
 	"filterListNamePh":           { "message": "Liste adı" },
 	"filterUrlPh":                { "message": "https://... liste URL'si" },
 	"filterLoadBtn":              { "message": "Yükle" },
+	"filterLoadBtnAbort":         { "message": "İptal" },
+	"filterLoadedLines":          { "message": "satır" },
 	"filterFileBtn":              { "message": "Dosya seç" },
 	"filterRulesPh":              { "message": "Kuralları doğrudan girin..." },
 	"filterSaveBtn":              { "message": "Listeyi kaydet" },

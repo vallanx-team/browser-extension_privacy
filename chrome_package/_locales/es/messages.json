@@ -109,6 +109,8 @@
 	"filterListNamePh":           { "message": "Nombre de la lista" },
 	"filterUrlPh":                { "message": "URL de la lista https://..." },
 	"filterLoadBtn":              { "message": "Cargar" },
+	"filterLoadBtnAbort":         { "message": "Cancelar" },
+	"filterLoadedLines":          { "message": "líneas" },
 	"filterFileBtn":              { "message": "Elegir archivo" },
 	"filterRulesPh":              { "message": "Introduce las reglas directamente..." },
 	"filterSaveBtn":              { "message": "Guardar lista" },

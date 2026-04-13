@@ -193,8 +193,13 @@ async function rebuildBlockingRules() {
   for (const list of settings.blocklists) {
     if (!list.enabled) continue;
     if (list.type === 'parental' && !settings.parentalEnabled) continue;
+    // 4900 safe rules max — Chrome enforces a 5000 "unsafe rule" limit
+    // (wildcard urlFilter rules count as unsafe). webNavigation covers the rest.
+    const remaining = 4900 - (idCounter - BLOCK_RULE_ID_START);
+    if (remaining <= 0) break;
+
     const text = await getBlocklistText(list.id);
-    const parsed = parseUBS(text);
+    const parsed = parseUBS(text, remaining);
 
     for (const rule of parsed) {
       if (rule.type === 'cosmetic') continue;
@@ -210,7 +215,6 @@ async function rebuildBlockingRules() {
           condition: cond
         });
       } else {
-        // For main_frame domain blocks: redirect to blocked page
         const isMainFrameBlock = rule.matchType === 'domain' && !cond.resourceTypes;
         const blockedPage = list.type === 'parental'
           ? '/blocked/blocked-parental.html'
@@ -226,18 +230,21 @@ async function rebuildBlockingRules() {
             : cond
         });
       }
-
-      if (idCounter > 29000) break;
     }
   }
 
   const existing = await chrome.declarativeNetRequest.getDynamicRules();
   const oldIds = existing.filter(r => r.id >= BLOCK_RULE_ID_START).map(r => r.id);
 
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: oldIds,
-    addRules: newRules
-  });
+  try {
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: oldIds,
+      addRules: newRules
+    });
+    console.log(`[VPS] Blocking rules updated: ${newRules.length} rules active`);
+  } catch (err) {
+    console.error('[VPS] updateDynamicRules failed:', err);
+  }
 }
 
 function buildCondition(rule) {
@@ -271,8 +278,7 @@ async function addLogEntry(entry) {
 
 chrome.webRequest.onErrorOccurred.addListener(
   async (details) => {
-    // Chrome: net::ERR_BLOCKED_BY_CLIENT, Firefox: NS_ERROR_ABORT (declarativeNetRequest)
-    if (details.error === 'net::ERR_BLOCKED_BY_CLIENT' || details.error === 'NS_ERROR_ABORT') {
+    if (details.error === 'net::ERR_BLOCKED_BY_CLIENT') {
       const estimatedBytes = 50000;
       await incrementStats(1, estimatedBytes / (1024 * 1024), calcSavedMs(estimatedBytes));
       await addLogEntry({ type: 'blocked', url: details.url });
@@ -359,6 +365,96 @@ async function blockAllTabs() {
   }
 }
 
+// ─── In-Memory Domain Sets (webNavigation blocking) ────────────────────────
+
+let blockDomains    = null; // Set<string> — null = not yet built
+let parentalDomains = null;
+let allowDomains    = null;
+let setsBuilding    = false;
+
+function* parseDomains(text) {
+  let start = 0;
+  while (start < text.length) {
+    const end = text.indexOf('\n', start);
+    const raw = end === -1 ? text.slice(start) : text.slice(start, end);
+    start = end === -1 ? text.length : end + 1;
+
+    const line = raw.trim();
+    if (!line || line.startsWith('!') || (line.startsWith('#') && !line.startsWith('##')) || /^\[.+\]$/.test(line)) continue;
+
+    // Hosts file: 0.0.0.0 domain.com
+    if (/^(0\.0\.0\.0|127\.0\.0\.1)\s+/.test(line)) {
+      const d = line.split(/\s+/)[1];
+      if (d && d !== 'localhost' && d !== '0.0.0.0') yield d;
+      continue;
+    }
+
+    // Whitelist / cosmetic → skip
+    if (line.startsWith('@@') || line.includes('##')) continue;
+
+    // AdBlock: ||domain^
+    if (line.startsWith('||')) {
+      yield line.replace(/^\|\|/, '').replace(/[\^/$].*$/, '').trim();
+      continue;
+    }
+
+    // Plain domain
+    const domain = line.split(/[\s$]/)[0];
+    if (domain && domain.includes('.') && !domain.includes('/')) yield domain;
+  }
+}
+
+async function buildDomainSets() {
+  if (setsBuilding) return;
+  setsBuilding = true;
+  console.log('[VPS] Building in-memory domain sets...');
+
+  const settings   = await getSettings();
+  const newBlock    = new Set();
+  const newParental = new Set();
+  const newAllow    = new Set();
+
+  for (const list of settings.blocklists) {
+    if (!list.enabled) continue;
+    if (list.type === 'parental' && !settings.parentalEnabled) continue;
+    const text = await getBlocklistText(list.id);
+    for (const domain of parseDomains(text)) {
+      if (list.type === 'allow')         newAllow.add(domain);
+      else if (list.type === 'parental') newParental.add(domain);
+      else                               newBlock.add(domain);
+    }
+  }
+
+  blockDomains    = newBlock;
+  parentalDomains = newParental;
+  allowDomains    = newAllow;
+  setsBuilding    = false;
+  console.log(`[VPS] Domain sets ready — block: ${blockDomains.size}, parental: ${parentalDomains.size}, allow: ${allowDomains.size}`);
+}
+
+chrome.webNavigation.onBeforeNavigate.addListener(details => {
+  if (details.frameId !== 0) return;
+  if (blockDomains === null) return;
+
+  let hostname;
+  try { hostname = new URL(details.url).hostname; } catch { return; }
+  if (!hostname) return;
+
+  const parts = hostname.split('.');
+  for (let i = 0; i < parts.length - 1; i++) {
+    const domain = parts.slice(i).join('.');
+    if (allowDomains.has(domain)) return;
+    if (parentalDomains.has(domain)) {
+      chrome.tabs.update(details.tabId, { url: chrome.runtime.getURL('blocked/blocked-parental.html') });
+      return;
+    }
+    if (blockDomains.has(domain)) {
+      chrome.tabs.update(details.tabId, { url: chrome.runtime.getURL(`blocked/blocked.html?url=${encodeURIComponent(details.url)}`) });
+      return;
+    }
+  }
+});
+
 // ─── Event Listeners ───────────────────────────────────────────────────────
 
 chrome.runtime.onInstalled.addListener(async () => {
@@ -367,6 +463,11 @@ chrome.runtime.onInstalled.addListener(async () => {
   await rebuildJsBlockRules();
   await rebuildBlockingRules();
   await applyProxy();
+  buildDomainSets();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  buildDomainSets();
 });
 
 chrome.storage.onChanged.addListener(async (changes) => {
@@ -378,7 +479,10 @@ chrome.storage.onChanged.addListener(async (changes) => {
 
   if ('siteOverrides' in changes) await rebuildJsBlockRules();
 
-  if ('blocklists' in changes || 'parentalEnabled' in changes) await rebuildBlockingRules();
+  if ('blocklists' in changes || 'parentalEnabled' in changes) {
+    await rebuildBlockingRules();
+    buildDomainSets();
+  }
   if (['proxyEnabled', 'proxyHost', 'proxyPort'].some(k => k in changes)) await applyProxy();
 });
 

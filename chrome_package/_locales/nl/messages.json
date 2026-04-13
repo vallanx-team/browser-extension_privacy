@@ -109,6 +109,8 @@
 	"filterListNamePh":           { "message": "Lijstnaam" },
 	"filterUrlPh":                { "message": "https://... lijst-URL" },
 	"filterLoadBtn":              { "message": "Laden" },
+	"filterLoadBtnAbort":         { "message": "Annuleren" },
+	"filterLoadedLines":          { "message": "regels" },
 	"filterFileBtn":              { "message": "Bestand kiezen" },
 	"filterRulesPh":              { "message": "Regels direct invoeren..." },
 	"filterSaveBtn":              { "message": "Lijst opslaan" },

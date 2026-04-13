@@ -109,6 +109,8 @@
 	"filterListNamePh":           { "message": "Όνομα λίστας" },
 	"filterUrlPh":                { "message": "https://... URL λίστας" },
 	"filterLoadBtn":              { "message": "Φόρτωση" },
+	"filterLoadBtnAbort":         { "message": "Ακύρωση" },
+	"filterLoadedLines":          { "message": "γραμμές" },
 	"filterFileBtn":              { "message": "Επιλογή αρχείου" },
 	"filterRulesPh":              { "message": "Εισαγάγετε κανόνες απευθείας..." },
 	"filterSaveBtn":              { "message": "Αποθήκευση λίστας" },

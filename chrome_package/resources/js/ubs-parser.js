@@ -3,18 +3,25 @@
  * Parst Vallanx Universal Blocklist Syntax und gibt strukturierte Regeln zurück.
  */
 
-export function parseUBS(text) {
+export function parseUBS(text, maxRules = Infinity) {
   const rules = [];
-  const lines = text.split('\n');
 
-  for (const rawLine of lines) {
+  let start = 0;
+  while (start < text.length) {
+    const end = text.indexOf('\n', start);
+    const rawLine = end === -1 ? text.slice(start) : text.slice(start, end);
+    start = end === -1 ? text.length : end + 1;
+
     const line = rawLine.trim();
     if (!line || line.startsWith('!') || (line.startsWith('#') && !line.startsWith('##')) || /^\[.+\]$/.test(line)) {
       continue;
     }
     try {
       const rule = parseLine(line);
-      if (rule) rules.push(rule);
+      if (rule) {
+        rules.push(rule);
+        if (rules.length >= maxRules) break;
+      }
     } catch (_) {
       // Fehlerhafte Zeilen überspringen
     }
@@ -23,6 +30,13 @@ export function parseUBS(text) {
 }
 
 function parseLine(line) {
+  // Hosts file format: 0.0.0.0 domain.com or 127.0.0.1 domain.com
+  if (/^(0\.0\.0\.0|127\.0\.0\.1)\s+/.test(line)) {
+    const domain = line.split(/\s+/)[1];
+    if (!domain || domain === 'localhost' || domain === '0.0.0.0' || domain === '127.0.0.1' || domain.startsWith('#')) return null;
+    return { type: 'block', pattern: domain, matchType: 'domain' };
+  }
+
   // Cosmetic / Element hiding: domain##selector oder ##selector
   if (line.includes('##')) {
     const idx = line.indexOf('##');

@@ -108,7 +108,9 @@
 
 	"filterListNamePh":           { "message": "Listenavn" },
 	"filterUrlPh":                { "message": "https://... liste-URL" },
-	"filterLoadBtn":              { "message": "Last inn" },
+	"filterLoadBtn":              { "message": "Last" },
+	"filterLoadBtnAbort":         { "message": "Avbryt" },
+	"filterLoadedLines":          { "message": "linjer" },
 	"filterFileBtn":              { "message": "Velg fil" },
 	"filterRulesPh":              { "message": "Skriv inn regler direkte..." },
 	"filterSaveBtn":              { "message": "Lagre liste" },

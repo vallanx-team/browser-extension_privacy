@@ -281,10 +281,11 @@
 						<option value="allow" data-i18n="filterAllowlist">Allowlist</option>
 					</select>
 				</div>
-				<div style="display:flex;gap:8px;margin-bottom:8px">
+				<div style="display:flex;gap:8px;margin-bottom:4px">
 					<input type="url" id="filter-url" data-i18n-ph="filterUrlPh" placeholder="https://... list URL" style="flex:1">
 					<button class="btn btn-ghost" id="btn-load-url" data-i18n="filterLoadBtn">Load</button>
 				</div>
+				<div id="filter-url-status" style="font-size:12px;min-height:18px;margin-bottom:6px"></div>
 				<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
 					<button class="btn btn-ghost" id="btn-load-file" data-i18n="filterFileBtn">Choose file</button>
 					<input type="file" id="filter-file" accept=".txt,.ubs" style="display:none">

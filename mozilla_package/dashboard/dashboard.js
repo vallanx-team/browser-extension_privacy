@@ -328,7 +328,7 @@ async function renderFilterLists() {
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <input type="checkbox" ${list.enabled ? 'checked' : ''} data-id="${list.id}" ${locked ? 'disabled' : ''}>
-        <button class="btn btn-danger" style="padding:4px 10px;font-size:11px" data-delete="${list.id}" ${locked ? 'disabled title="Kinderschutz entsperren um zu löschen"' : ''}>
+        <button class="btn btn-danger" style="padding:4px 10px;font-size:11px" data-delete="${list.id}" ${locked ? 'disabled title="Unlock parental controls to delete"' : ''}>
           ${locked ? '🔒' : '✕'}
         </button>
       </div>
@@ -356,10 +356,87 @@ async function renderFilterLists() {
 }
 
 function bindFilterEvents() {
+  let loadedUrlText = null;
+  let fetchController = null;
+
+  const urlInput   = document.getElementById('filter-url');
+  const loadBtn    = document.getElementById('btn-load-url');
+  const statusEl   = document.getElementById('filter-url-status');
+
+  function setLoadBtnState(state, detail = '') {
+    loadBtn.disabled = state === 'loading';
+    loadBtn.className = 'btn btn-ghost';
+    switch (state) {
+      case 'loading':
+        loadBtn.textContent = t('filterLoadBtnAbort') || 'Cancel';
+        loadBtn.style.color = 'var(--color-yellow)';
+        loadBtn.disabled = false;
+        statusEl.textContent = '⏳ ' + (detail || '...');
+        statusEl.style.color = 'var(--text-muted)';
+        break;
+      case 'success':
+        loadBtn.textContent = '✓';
+        loadBtn.style.color = 'var(--color-main-green)';
+        statusEl.textContent = '✓ ' + detail;
+        statusEl.style.color = 'var(--color-main-green)';
+        break;
+      case 'error':
+        loadBtn.textContent = '✗';
+        loadBtn.style.color = 'var(--color-red)';
+        statusEl.textContent = '✗ ' + detail;
+        statusEl.style.color = 'var(--color-red)';
+        break;
+      default:
+        loadBtn.textContent = t('filterLoadBtn') || 'Load';
+        loadBtn.style.color = '';
+        statusEl.textContent = '';
+    }
+  }
+
+  urlInput.addEventListener('input', () => {
+    loadedUrlText = null;
+    setLoadBtnState('idle');
+  });
+
+  loadBtn.addEventListener('click', async () => {
+    if (fetchController) {
+      fetchController.abort();
+      fetchController = null;
+      loadedUrlText = null;
+      setLoadBtnState('idle');
+      return;
+    }
+
+    const url = urlInput.value.trim();
+    if (!url) return;
+
+    fetchController = new AbortController();
+    setLoadBtnState('loading', url);
+
+    try {
+      const resp = await fetch(url, { signal: fetchController.signal });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      loadedUrlText = await resp.text();
+
+      const lines = loadedUrlText.split('\n').length;
+      const mb    = (new TextEncoder().encode(loadedUrlText).length / 1048576).toFixed(1);
+      setLoadBtnState('success', `${lines.toLocaleString()} ${t('filterLoadedLines') || 'lines'} (${mb} MB)`);
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        setLoadBtnState('idle');
+      } else {
+        loadedUrlText = null;
+        setLoadBtnState('error', t('filterErrorFetch') || 'Failed to load');
+      }
+    } finally {
+      fetchController = null;
+    }
+  });
+
   document.getElementById('btn-add-list').addEventListener('click', async () => {
     const name    = document.getElementById('filter-name').value.trim();
     const type    = document.getElementById('filter-type').value;
-    const url     = document.getElementById('filter-url').value.trim();
+    const url     = urlInput.value.trim();
     const text    = document.getElementById('filter-text').value.trim();
     const errorEl = document.getElementById('filter-add-error');
 
@@ -371,27 +448,28 @@ function bindFilterEvents() {
     errorEl.style.display = 'none';
 
     if (!name) return showError(t('filterErrorNoName'));
-    if (!url && !text) return showError(t('filterErrorNoSource'));
 
-    let listText = text;
-    if (url) {
-      try {
-        const resp = await fetch(url);
-        if (!resp.ok) return showError(t('filterErrorFetch'));
-        listText = await resp.text();
-      } catch {
-        return showError(t('filterErrorFetch'));
-      }
+    let listText = loadedUrlText || text;
+
+    if (!listText && url) {
+      // Fallback: direkt speichern ohne Vorschau (URL wird beim Laden in background verwendet)
+      // Url bleibt als Referenz im Metadaten-Objekt
+      listText = '';
     }
+
+    if (!listText && !url) return showError(t('filterErrorNoSource'));
 
     const id = crypto.randomUUID();
     const settings = await getSettings();
     await setBlocklistText(id, listText);
     settings.blocklists.push({ id, name, type, url, enabled: true });
     await setSetting('blocklists', settings.blocklists);
+
     document.getElementById('filter-name').value = '';
-    document.getElementById('filter-url').value  = '';
+    urlInput.value  = '';
     document.getElementById('filter-text').value = '';
+    loadedUrlText = null;
+    setLoadBtnState('idle');
     renderFilterLists();
   });
 
@@ -402,7 +480,12 @@ function bindFilterEvents() {
     const file = e.target.files[0];
     if (!file) return;
     document.getElementById('filter-file-name').textContent = file.name;
-    document.getElementById('filter-text').value = await file.text();
+    const text = await file.text();
+    document.getElementById('filter-text').value = text;
+    const lines = text.split('\n').length;
+    const mb    = (file.size / 1048576).toFixed(1);
+    statusEl.textContent = `✓ ${file.name} — ${lines.toLocaleString()} ${t('filterLoadedLines') || 'lines'} (${mb} MB)`;
+    statusEl.style.color = 'var(--color-main-green)';
   });
 
   // ── Kinderschutz-Filterliste ──────────────────────────────────────────────
@@ -423,7 +506,7 @@ function bindFilterEvents() {
     await setBlocklistText(id, listText);
     settings.blocklists.push({
       id,
-      name: url ? new URL(url).hostname : 'Kinderschutzliste',
+      name: url ? new URL(url).hostname : 'Parental filter list',
       type: 'parental',
       url,
       enabled: true
