@@ -1,4 +1,4 @@
-import { getSettings, setSetting, getStats } from '../resources/js/storage.js';
+import { getSettings, setSetting, getStats, setBlocklistText, deleteBlocklistText } from '../resources/js/storage.js';
 import { formatMb, formatMs } from '../resources/js/stats.js';
 import { loadI18n, t, applyI18n } from '../resources/js/i18n.js';
 
@@ -346,8 +346,10 @@ async function renderFilterLists() {
 
   container.querySelectorAll('[data-delete]').forEach(btn => {
     btn.addEventListener('click', async e => {
+      const deleteId = e.target.dataset.delete;
       const settings = await getSettings();
-      await setSetting('blocklists', settings.blocklists.filter(l => l.id !== e.target.dataset.delete));
+      await deleteBlocklistText(deleteId);
+      await setSetting('blocklists', settings.blocklists.filter(l => l.id !== deleteId));
       renderFilterLists();
     });
   });
@@ -382,8 +384,10 @@ function bindFilterEvents() {
       }
     }
 
+    const id = crypto.randomUUID();
     const settings = await getSettings();
-    settings.blocklists.push({ id: crypto.randomUUID(), name, type, url, text: listText, enabled: true });
+    await setBlocklistText(id, listText);
+    settings.blocklists.push({ id, name, type, url, enabled: true });
     await setSetting('blocklists', settings.blocklists);
     document.getElementById('filter-name').value = '';
     document.getElementById('filter-url').value  = '';
@@ -414,13 +418,14 @@ function bindFilterEvents() {
       listText = await resp.text();
     }
 
+    const id = crypto.randomUUID();
     const settings = await getSettings();
+    await setBlocklistText(id, listText);
     settings.blocklists.push({
-      id: crypto.randomUUID(),
+      id,
       name: url ? new URL(url).hostname : 'Kinderschutzliste',
       type: 'parental',
       url,
-      text: listText,
       enabled: true
     });
     await setSetting('blocklists', settings.blocklists);

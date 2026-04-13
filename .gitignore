@@ -232,4 +232,5 @@ composer.lock
 _chrome_package/node_modules/
 _chrome_package/package-lock.json
 _chrome_package.crx
-/mozilla_amo/
+/mozilla_extension/
+/chrome_extension/

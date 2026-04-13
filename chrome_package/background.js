@@ -1,6 +1,6 @@
 // Vallanx Privacy Shield — Background Service Worker
 
-import { getSettings, incrementStats } from './resources/js/storage.js';
+import { getSettings, incrementStats, getBlocklistText } from './resources/js/storage.js';
 import { parseUBS } from './resources/js/ubs-parser.js';
 import { calcSavedMs } from './resources/js/stats.js';
 
@@ -193,7 +193,8 @@ async function rebuildBlockingRules() {
   for (const list of settings.blocklists) {
     if (!list.enabled) continue;
     if (list.type === 'parental' && !settings.parentalEnabled) continue;
-    const parsed = parseUBS(list.text || '');
+    const text = await getBlocklistText(list.id);
+    const parsed = parseUBS(text);
 
     for (const rule of parsed) {
       if (rule.type === 'cosmetic') continue;

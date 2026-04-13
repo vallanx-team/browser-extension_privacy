@@ -55,13 +55,60 @@ const DEFAULTS = {
 
 export async function getSettings() {
   return new Promise(resolve => {
-    chrome.storage.sync.get(DEFAULTS, result => resolve(result));
+    const syncDefaults = Object.fromEntries(Object.entries(DEFAULTS).filter(([k]) => k !== 'blocklists'));
+    chrome.storage.sync.get(syncDefaults, syncResult => {
+      chrome.storage.local.get({ blocklists: [] }, localResult => {
+        resolve({ ...syncResult, blocklists: localResult.blocklists });
+      });
+    });
   });
 }
 
 export async function setSetting(key, value) {
-  return new Promise(resolve => {
-    chrome.storage.sync.set({ [key]: value }, resolve);
+  if (key === 'blocklists') {
+    return new Promise(resolve => chrome.storage.local.set({ [key]: value }, resolve));
+  }
+  return new Promise(resolve => chrome.storage.sync.set({ [key]: value }, resolve));
+}
+
+// ─── IndexedDB for large blocklist text ──────────────────────────────────────
+
+function openBlocklistDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('vallanx-blocklists', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('texts', { keyPath: 'id' });
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => reject(e.target.error);
+  });
+}
+
+export async function setBlocklistText(id, text) {
+  const db = await openBlocklistDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('texts', 'readwrite');
+    tx.objectStore('texts').put({ id, text });
+    tx.oncomplete = resolve;
+    tx.onerror = e => reject(e.target.error);
+  });
+}
+
+export async function getBlocklistText(id) {
+  const db = await openBlocklistDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('texts', 'readonly');
+    const req = tx.objectStore('texts').get(id);
+    req.onsuccess = e => resolve(e.target.result?.text ?? '');
+    req.onerror = e => reject(e.target.error);
+  });
+}
+
+export async function deleteBlocklistText(id) {
+  const db = await openBlocklistDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('texts', 'readwrite');
+    tx.objectStore('texts').delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror = e => reject(e.target.error);
   });
 }
 

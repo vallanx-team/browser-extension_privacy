@@ -100,7 +100,7 @@ https://blocklist.vallanx.com/parental-controls-list.txt
 ```
 
 
-**Click on the "Lock" button, if you want to protect the settings with a password. **
+**Click on the "Lock" button, if you want to protect the settings with a password.**
 
 ***Keep in mind, this is just a very basic form of protection as there a several ways to quickly circumvent this measures.***
 
@@ -212,7 +212,7 @@ Runs 25 unit tests covering the UBS parser, statistics engine, and i18n helper.
 ---
 
 🗓️ Release: April 2026
-🔖 Version: 0.2.3
+🔖 Version: 0.2.4
 💪 Supporter: www.vallanx.com
 
 ## License
