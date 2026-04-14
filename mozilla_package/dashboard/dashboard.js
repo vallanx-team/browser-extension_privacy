@@ -57,11 +57,14 @@ async function loadNetworkLog() {
     container.textContent = t('networkLogEmpty');
     return;
   }
-  container.innerHTML = networkLog.map(e => {
+  container.textContent = '';
+  networkLog.forEach(e => {
     const time = new Date(e.timestamp).toLocaleTimeString();
     const icon = e.type === 'blocked' ? '🚫' : '✓';
-    return `<div>${icon} [${time}] ${e.url}</div>`;
-  }).join('');
+    const div = document.createElement('div');
+    div.textContent = `${icon} [${time}] ${e.url}`;
+    container.appendChild(div);
+  });
 }
 
 // ─── Settings ────────────────────────────────────────────────────────────────
@@ -320,19 +323,37 @@ async function renderFilterLists() {
     const el = document.createElement('div');
     el.className = 'card';
     el.style.cssText = 'margin-bottom:8px;display:flex;align-items:center;justify-content:space-between';
-    el.innerHTML = `
-      <div>
-        <strong>${list.name}</strong>
-        <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${list.type}</span>
-        ${isParental ? `<span style="font-size:10px;color:var(--accent-2);margin-left:6px">${t('parentalOnlyActive')}</span>` : ''}
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="checkbox" ${list.enabled ? 'checked' : ''} data-id="${list.id}" ${locked ? 'disabled' : ''}>
-        <button class="btn btn-danger" style="padding:4px 10px;font-size:11px" data-delete="${list.id}" ${locked ? 'disabled title="Unlock parental controls to delete"' : ''}>
-          ${locked ? '🔒' : '✕'}
-        </button>
-      </div>
-    `;
+    const left = document.createElement('div');
+    const nameEl = document.createElement('strong');
+    nameEl.textContent = list.name;
+    const typeEl = document.createElement('span');
+    typeEl.style.cssText = 'font-size:11px;color:var(--text-muted);margin-left:8px';
+    typeEl.textContent = list.type;
+    left.appendChild(nameEl);
+    left.appendChild(typeEl);
+    if (isParental) {
+      const parentalEl = document.createElement('span');
+      parentalEl.style.cssText = 'font-size:10px;color:var(--accent-2);margin-left:6px';
+      parentalEl.textContent = t('parentalOnlyActive');
+      left.appendChild(parentalEl);
+    }
+    const right = document.createElement('div');
+    right.style.cssText = 'display:flex;gap:8px;align-items:center';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = !!list.enabled;
+    checkbox.dataset.id = list.id;
+    if (locked) checkbox.disabled = true;
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-danger';
+    btn.style.cssText = 'padding:4px 10px;font-size:11px';
+    btn.dataset.delete = list.id;
+    if (locked) { btn.disabled = true; btn.title = 'Unlock parental controls to delete'; }
+    btn.textContent = locked ? '🔒' : '✕';
+    right.appendChild(checkbox);
+    right.appendChild(btn);
+    el.appendChild(left);
+    el.appendChild(right);
     container.appendChild(el);
   }
 
