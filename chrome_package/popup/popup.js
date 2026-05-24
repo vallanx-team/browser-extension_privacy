@@ -1,4 +1,4 @@
-import { getSettings, setSetting, getStats } from '../resources/js/storage.js';
+import { getSettings, setSetting, getStats, getBlocklistText, setBlocklistText } from '../resources/js/storage.js';
 import { formatElements, formatMb, formatMs } from '../resources/js/stats.js';
 import { loadI18n, t, applyI18n } from '../resources/js/i18n.js';
 
@@ -83,6 +83,40 @@ function bindEvents(hostname) {
   });
 }
 
+const REPORTED_LIST_ID = 'vallanx-reported';
+const SKIP_SCHEMES = ['chrome:', 'chrome-extension:', 'moz-extension:', 'edge:', 'about:', 'data:', 'blob:'];
+
+async function addToLocalBlacklist(url) {
+  let entry;
+  try {
+    const parsed = new URL(url);
+    if (SKIP_SCHEMES.includes(parsed.protocol)) return;
+    const hostname = parsed.hostname;
+    if (!hostname) return;
+    const pathname = parsed.pathname;
+    entry = (pathname && pathname !== '/') ? `||${hostname}${pathname}^` : hostname;
+  } catch {
+    return;
+  }
+
+  const settings = await getSettings();
+  const exists = settings.blocklists.find(l => l.id === REPORTED_LIST_ID);
+
+  if (!exists) {
+    await setBlocklistText(REPORTED_LIST_ID, entry);
+    settings.blocklists.push({ id: REPORTED_LIST_ID, name: 'Reported URLs', type: 'block', url: '', enabled: true });
+  } else {
+    const current = await getBlocklistText(REPORTED_LIST_ID);
+    const lines = current.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.includes(entry)) return;
+    lines.push(entry);
+    await setBlocklistText(REPORTED_LIST_ID, lines.join('\n'));
+    exists.lastReported = Date.now();
+  }
+
+  await setSetting('blocklists', settings.blocklists);
+}
+
 async function reportSuspicious() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const btn = document.getElementById('btn-report');
@@ -93,6 +127,7 @@ async function reportSuspicious() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ URL: tab.url, 'User-IP': '', sourcetype: 'browser_extension' })
     });
+    await addToLocalBlacklist(tab.url);
     btn.textContent = t('reportSent');
   } catch {
     btn.textContent = t('reportError');

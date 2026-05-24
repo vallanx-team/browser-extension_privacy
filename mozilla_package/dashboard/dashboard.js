@@ -1,9 +1,11 @@
-import { getSettings, setSetting, getStats, setBlocklistText, deleteBlocklistText } from '../resources/js/storage.js';
+import { getSettings, setSetting, getStats, setBlocklistText, deleteBlocklistText, getBlocklistText } from '../resources/js/storage.js';
 import { formatMb, formatMs } from '../resources/js/stats.js';
 import { loadI18n, t, applyI18n } from '../resources/js/i18n.js';
 
 // ─── Parental Controls — Session State ───────────────────────────────────────
 let parentalUnlocked = false;
+let editingListId = null;
+let startEditFn = null;
 
 async function hashPassword(password) {
   const enc = new TextEncoder();
@@ -344,6 +346,12 @@ async function renderFilterLists() {
     checkbox.checked = !!list.enabled;
     checkbox.dataset.id = list.id;
     if (locked) checkbox.disabled = true;
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn btn-ghost';
+    editBtn.style.cssText = 'padding:4px 10px;font-size:11px';
+    editBtn.dataset.edit = list.id;
+    if (locked) editBtn.disabled = true;
+    editBtn.textContent = '✏';
     const btn = document.createElement('button');
     btn.className = 'btn btn-danger';
     btn.style.cssText = 'padding:4px 10px;font-size:11px';
@@ -351,6 +359,7 @@ async function renderFilterLists() {
     if (locked) { btn.disabled = true; btn.title = 'Unlock parental controls to delete'; }
     btn.textContent = locked ? '🔒' : '✕';
     right.appendChild(checkbox);
+    right.appendChild(editBtn);
     right.appendChild(btn);
     el.appendChild(left);
     el.appendChild(right);
@@ -372,6 +381,12 @@ async function renderFilterLists() {
       await deleteBlocklistText(deleteId);
       await setSetting('blocklists', settings.blocklists.filter(l => l.id !== deleteId));
       renderFilterLists();
+    });
+  });
+
+  container.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (startEditFn) startEditFn(btn.dataset.edit);
     });
   });
 }
@@ -413,6 +428,36 @@ function bindFilterEvents() {
         statusEl.textContent = '';
     }
   }
+
+  function resetForm() {
+    document.getElementById('filter-name').value = '';
+    urlInput.value = '';
+    document.getElementById('filter-text').value = '';
+    document.getElementById('filter-file-name').textContent = '';
+    loadedUrlText = null;
+    editingListId = null;
+    document.getElementById('btn-add-list').textContent = t('filterSaveBtn') || 'Save list';
+    document.getElementById('btn-cancel-edit').style.display = 'none';
+    setLoadBtnState('idle');
+  }
+
+  async function startEdit(id) {
+    const settings = await getSettings();
+    const list = settings.blocklists.find(l => l.id === id);
+    if (!list) return;
+    const text = await getBlocklistText(id);
+    document.getElementById('filter-name').value = list.name;
+    document.getElementById('filter-type').value = list.type;
+    urlInput.value = list.url || '';
+    document.getElementById('filter-text').value = text;
+    loadedUrlText = null;
+    setLoadBtnState('idle');
+    editingListId = id;
+    document.getElementById('btn-add-list').textContent = t('filterUpdateBtn') || 'Update list';
+    document.getElementById('btn-cancel-edit').style.display = '';
+    document.getElementById('filter-name').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  startEditFn = startEdit;
 
   urlInput.addEventListener('input', () => {
     loadedUrlText = null;
@@ -467,8 +512,24 @@ function bindFilterEvents() {
     };
 
     errorEl.style.display = 'none';
-
     if (!name) return showError(t('filterErrorNoName'));
+
+    if (editingListId) {
+      const listText = loadedUrlText || text;
+      const settings = await getSettings();
+      const list = settings.blocklists.find(l => l.id === editingListId);
+      if (list) {
+        list.name = name;
+        list.type = type;
+        list.url  = url;
+        list.lastModified = Date.now();
+        await setBlocklistText(editingListId, listText);
+        await setSetting('blocklists', settings.blocklists);
+      }
+      resetForm();
+      renderFilterLists();
+      return;
+    }
 
     let listText = loadedUrlText || text;
 
@@ -486,13 +547,11 @@ function bindFilterEvents() {
     settings.blocklists.push({ id, name, type, url, enabled: true });
     await setSetting('blocklists', settings.blocklists);
 
-    document.getElementById('filter-name').value = '';
-    urlInput.value  = '';
-    document.getElementById('filter-text').value = '';
-    loadedUrlText = null;
-    setLoadBtnState('idle');
+    resetForm();
     renderFilterLists();
   });
+
+  document.getElementById('btn-cancel-edit').addEventListener('click', resetForm);
 
   document.getElementById('btn-load-file').addEventListener('click', () =>
     document.getElementById('filter-file').click());

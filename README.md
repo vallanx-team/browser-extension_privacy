@@ -38,7 +38,7 @@ In the top area of the pop-up you find the current statistics, which derrive fro
 
 #### Report a website
 
-If you find a suspicious website, like a phishing attempt, use the red "Report suspicious website". A short notice will be send to Vallanx, which will review the website and, if necessary, add it to  blocklists for future filtering.
+If you find a suspicious website, like a phishing attempt, use the red "Report suspicious website". A short notice will be sent to Vallanx, which will review the website and, if necessary, add it to blocklists for future filtering. In addition, the reported domain is immediately added to a local "Reported URLs" blocklist on your device, so it is blocked right away for you.
 
 #### Open dashboard
 
@@ -109,7 +109,7 @@ https://blocklist.vallanx.com/parental-controls-list.txt
 
 In the "Filter" section of the dashboard, you have several options to implement a blocklist or allowlist. Blocklists are rule sets to tell the browser, which sites are not allowed to open, because of there malicious and dangerous content.
 
-You can either **upload** a blocklist in txt-file format, **include a URL** to a blocklist, which is provided online, or you can **manually type in rules** to add them to a list.
+You can either **upload** a blocklist in txt-file format, **include a URL** to a blocklist, which is provided online, or you can **manually type in rules** to add them to a list. Saved lists can be **edited** at any time using the ✏ button — you can change the name, type, source URL, and rules.
 
 
 **Universal Blocklist Syntax**
@@ -126,6 +126,7 @@ https://github.com/vallanx-team/universal_blocklist_syntax
 - **Privacy Headers** — Do Not Track / Global Privacy Control, custom User-Agent, custom X-Forwarded-For header
 - **Geolocation Spoofing** — Override `getCurrentPosition` and `watchPosition` with configurable coordinates
 - **Content Controls** — Block JavaScript (global or per site), pop-ups, media elements above a size threshold, external fonts, prefetch, and hyperlink auditing
+- **Popup Badge Indicator** — Extension icon shows a yellow "!" badge when a popup was blocked on the current tab; clears automatically on navigation or when popup blocking is disabled for the site
 - **Cosmetic Rules** — Element hiding via `##selector` UBS rules, applied in-page with a MutationObserver
 - **Proxy Support** — Configure a fixed HTTP/SOCKS proxy with optional authentication
 - **Parental Controls** — Time-based browsing restrictions using server time (worldtimeapi.org) with local time fallback
@@ -211,8 +212,8 @@ Runs 25 unit tests covering the UBS parser, statistics engine, and i18n helper.
 
 ---
 
-🗓️ Release: April 2026
-🔖 Version: 0.2.4
+🗓️ Release: May 2026
+🔖 Version: 0.2.5
 💪 Supporter: www.vallanx.com
 
 ## License

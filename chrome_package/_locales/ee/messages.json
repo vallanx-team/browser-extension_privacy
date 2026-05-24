@@ -138,5 +138,8 @@
 	"aboutSupport":               { "message": "Privacy Shieldist" },
 	"released":                   { "message": "Välja antud" },
 	"version":                    { "message": "Versioon" },
-	"openDashboard":              { "message": "Ava töölaud" }
+	"openDashboard":              { "message": "Ava töölaud" },
+
+	"filterCancelEdit":			{ "message": "Tühista" },
+	"filterUpdateBtn":			{ "message": "Salvesta muudatused" }
 }

@@ -138,5 +138,8 @@
 	"aboutSupport":               { "message": "Sobre o Privacy Shield" },
 	"released":                   { "message": "Lançado" },
 	"version":                    { "message": "Versão" },
-	"openDashboard":              { "message": "Abrir Painel" }
+	"openDashboard":              { "message": "Abrir Painel" },
+
+	"filterCancelEdit":			{ "message": "Descartar" },
+	"filterUpdateBtn":			{ "message": "Guardar alterações" }
 }

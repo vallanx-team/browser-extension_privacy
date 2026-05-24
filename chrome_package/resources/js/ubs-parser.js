@@ -54,12 +54,32 @@ function parseLine(line) {
     return { type: 'allow', pattern: line.slice(1).trim(), matchType: 'domain' };
   }
 
-  // AdBlock-Stil: ||domain^
+  // AdBlock-Stil: ||domain^ oder ||domain/path^
   if (line.startsWith('||')) {
     const [base, ...modParts] = line.split(' ');
     const pattern = extractDomain(base);
     const modifiers = parseModifiers(modParts.join(' '), line);
+    if (pattern.includes('/')) {
+      return { type: 'block', pattern, matchType: 'urlfilter', ...modifiers };
+    }
     return { type: 'block', pattern, matchType: 'domain', ...modifiers };
+  }
+
+  // Vollständige URL mit Schema: https://domain/path oder http://domain/path
+  if (line.startsWith('https://') || line.startsWith('http://')) {
+    try {
+      const [urlPart, ...modParts] = line.split(' ');
+      const parsed = new URL(urlPart);
+      const hostname = parsed.hostname;
+      if (!hostname) return null;
+      const modifiers = parseModifiers(modParts.join(' '), line);
+      if (parsed.pathname && parsed.pathname !== '/') {
+        return { type: 'block', pattern: `${hostname}${parsed.pathname}`, matchType: 'urlfilter', ...modifiers };
+      }
+      return { type: 'block', pattern: hostname, matchType: 'domain', ...modifiers };
+    } catch {
+      return null;
+    }
   }
 
   // Wildcard: *.domain.com
@@ -69,10 +89,14 @@ function parseLine(line) {
     return { type: 'block', pattern: domainPart, matchType: 'wildcard', ...modifiers };
   }
 
-  // Einfache Domain: domain.com oder domain.com :modifier
+  // Einfache Domain oder Domain/Pfad: domain.com oder www.example.com/path
   const [domainPart, ...modParts] = line.split(' ');
   if (!domainPart || domainPart.includes(':::')) return null;
   const modifiers = parseModifiers(modParts.join(' '), line);
+  const slashIdx = domainPart.indexOf('/');
+  if (slashIdx > 0) {
+    return { type: 'block', pattern: `${domainPart.slice(0, slashIdx)}${domainPart.slice(slashIdx)}`, matchType: 'urlfilter', ...modifiers };
+  }
   return { type: 'block', pattern: domainPart, matchType: 'domain', ...modifiers };
 }
 

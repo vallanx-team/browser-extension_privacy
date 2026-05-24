@@ -68,6 +68,12 @@
   }
 })();
 
+// ─── Popup-Block-Indikator ────────────────────────────────────────────────────
+
+document.addEventListener('__vps_popup_blocked__', () => {
+  try { chrome.runtime.sendMessage({ type: 'popupBlocked' }); } catch (_) {}
+});
+
 // ─── Kosmetische UBS-Regeln (Element Hiding) ─────────────────────────────────
 
 (async () => {

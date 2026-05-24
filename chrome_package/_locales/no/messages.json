@@ -138,5 +138,8 @@
 	"aboutSupport":               { "message": "Brukerstøtte og hjelp" },
 	"released":                   { "message": "Utgitt" },
 	"version":                    { "message": "Versjon" },
-	"openDashboard":              { "message": "Åpne dashbord" }
+	"openDashboard":              { "message": "Åpne dashbord" },
+
+	"filterCancelEdit":			{ "message": "Avvis" },
+	"filterUpdateBtn":			{ "message": "Lagre endring" }
 }

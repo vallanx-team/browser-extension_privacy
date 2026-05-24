@@ -138,5 +138,8 @@
 	"aboutSupport":               { "message": "Over Privacy Shield" },
 	"released":                   { "message": "Gepubliceerd" },
 	"version":                    { "message": "Versie" },
-	"openDashboard":              { "message": "Dashboard openen" }
+	"openDashboard":              { "message": "Dashboard openen" },
+
+	"filterCancelEdit":			{ "message": "Annuleren" },
+	"filterUpdateBtn":			{ "message": "Wijziging opslaan" }
 }

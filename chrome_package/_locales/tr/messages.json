@@ -138,5 +138,8 @@
 	"aboutSupport":               { "message": "Privacy Shield hakkında" },
 	"released":                   { "message": "Yayınlanma" },
 	"version":                    { "message": "Versiyon" },
-	"openDashboard":              { "message": "Paneli Aç" }
+	"openDashboard":              { "message": "Paneli Aç" },
+
+	"filterCancelEdit":			{ "message": "İptal et" },
+	"filterUpdateBtn":			{ "message": "Değişikliği kaydet" }
 }

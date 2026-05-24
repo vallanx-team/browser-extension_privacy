@@ -101,7 +101,10 @@
     if (s.blockPopups) {
       try {
         Object.defineProperty(window, 'open', {
-          value: function () { return null; },
+          value: function () {
+            document.dispatchEvent(new CustomEvent('__vps_popup_blocked__'));
+            return null;
+          },
           configurable: true,
           writable: true,
         });

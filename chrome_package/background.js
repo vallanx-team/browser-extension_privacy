@@ -215,7 +215,7 @@ async function rebuildBlockingRules() {
           condition: cond
         });
       } else {
-        const isMainFrameBlock = rule.matchType === 'domain' && !cond.resourceTypes;
+        const isMainFrameBlock = (rule.matchType === 'domain' || rule.matchType === 'urlfilter') && !cond.resourceTypes;
         const blockedPage = list.type === 'parental'
           ? '/blocked/blocked-parental.html'
           : `/blocked/blocked.html?list=${encodeURIComponent(list.name)}`;
@@ -251,6 +251,8 @@ function buildCondition(rule) {
   const cond = {};
   if (rule.matchType === 'domain') {
     cond.requestDomains = [rule.pattern];
+  } else if (rule.matchType === 'urlfilter') {
+    cond.urlFilter = `||${rule.pattern}`;
   } else if (rule.matchType === 'wildcard') {
     cond.urlFilter = `*${rule.pattern.replace('*.', '.')}*`;
   }
@@ -365,6 +367,22 @@ async function blockAllTabs() {
   }
 }
 
+// ─── Popup-Badge ─────────────────────────────────────────────────────────────
+
+const popupBlockedTabs = new Set();
+
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (msg.type !== 'popupBlocked' || !sender.tab?.id) return;
+  const tabId = sender.tab.id;
+  popupBlockedTabs.add(tabId);
+  chrome.action.setBadgeText({ text: 'P', tabId });
+  chrome.action.setBadgeBackgroundColor({ color: '#FFAE00', tabId });
+});
+
+chrome.tabs.onRemoved.addListener(tabId => {
+  popupBlockedTabs.delete(tabId);
+});
+
 // ─── In-Memory Domain Sets (webNavigation blocking) ────────────────────────
 
 let blockDomains    = null; // Set<string> — null = not yet built
@@ -392,9 +410,11 @@ function* parseDomains(text) {
     // Whitelist / cosmetic → skip
     if (line.startsWith('@@') || line.includes('##')) continue;
 
-    // AdBlock: ||domain^
+    // AdBlock: ||domain^  (pfad-spezifische Regeln wie ||domain/path^ überspringen)
     if (line.startsWith('||')) {
-      yield line.replace(/^\|\|/, '').replace(/[\^/$].*$/, '').trim();
+      const d = line.replace(/^\|\|/, '').replace(/[\^$].*$/, '').trim();
+      if (d.includes('/')) continue;
+      yield d;
       continue;
     }
 
@@ -434,6 +454,12 @@ async function buildDomainSets() {
 
 chrome.webNavigation.onBeforeNavigate.addListener(details => {
   if (details.frameId !== 0) return;
+
+  if (popupBlockedTabs.has(details.tabId)) {
+    chrome.action.setBadgeText({ text: '', tabId: details.tabId });
+    popupBlockedTabs.delete(details.tabId);
+  }
+
   if (blockDomains === null) return;
 
   let hostname;
@@ -477,7 +503,26 @@ chrome.storage.onChanged.addListener(async (changes) => {
   const contentKeys = ['blockMedia', 'blockFonts', 'lowBandwidth', 'disableHyperlinkAudit'];
   if (contentKeys.some(k => k in changes)) await rebuildContentRules();
 
-  if ('siteOverrides' in changes) await rebuildJsBlockRules();
+  if ('siteOverrides' in changes) {
+    await rebuildJsBlockRules();
+    const newOverrides = changes.siteOverrides.newValue || {};
+    const oldOverrides = changes.siteOverrides.oldValue || {};
+    for (const [domain, settings] of Object.entries(newOverrides)) {
+      const wasBlocking = oldOverrides[domain]?.blockPopups ?? true;
+      const isBlocking  = settings.blockPopups ?? true;
+      if (wasBlocking && !isBlocking) {
+        const tabs = await chrome.tabs.query({});
+        for (const tab of tabs) {
+          try {
+            if (new URL(tab.url).hostname === domain) {
+              chrome.action.setBadgeText({ text: '', tabId: tab.id });
+              popupBlockedTabs.delete(tab.id);
+            }
+          } catch (_) {}
+        }
+      }
+    }
+  }
 
   if ('blocklists' in changes || 'parentalEnabled' in changes) {
     await rebuildBlockingRules();
