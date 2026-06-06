@@ -326,6 +326,26 @@ async function applyProxy() {
   }
 }
 
+// ─── Proxy Auth ────────────────────────────────────────────────────────────
+
+chrome.webRequest.onAuthRequired.addListener(
+  (details, callback) => {
+    if (details.isProxy) {
+      getSettings().then(s => {
+        if (s.proxyUsername && s.proxyPassword) {
+          callback({ authCredentials: { username: s.proxyUsername, password: s.proxyPassword } });
+        } else {
+          callback({});
+        }
+      });
+    } else {
+      callback({});
+    }
+  },
+  { urls: ['<all_urls>'] },
+  ['asyncBlocking']
+);
+
 // ─── Parental Controls ─────────────────────────────────────────────────────
 
 chrome.alarms.create('parentalCheck', { periodInMinutes: 1 });

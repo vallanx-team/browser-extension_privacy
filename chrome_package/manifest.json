@@ -41,6 +41,7 @@
     "declarativeNetRequestWithHostAccess",
     "proxy",
     "webRequest",
+    "webRequestAuthProvider",
     "webNavigation",
     "alarms"
   ],
