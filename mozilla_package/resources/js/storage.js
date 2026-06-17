@@ -53,19 +53,22 @@ const DEFAULTS = {
   parentalTimezone:  'Europe/Berlin',
 };
 
+const LOCAL_KEYS = new Set(['blocklists', 'proxyUsername', 'proxyPassword']);
+
 export async function getSettings() {
   return new Promise(resolve => {
-    const syncDefaults = Object.fromEntries(Object.entries(DEFAULTS).filter(([k]) => k !== 'blocklists'));
+    const syncDefaults = Object.fromEntries(Object.entries(DEFAULTS).filter(([k]) => !LOCAL_KEYS.has(k)));
+    const localDefaults = { blocklists: [], proxyUsername: '', proxyPassword: '' };
     chrome.storage.sync.get(syncDefaults, syncResult => {
-      chrome.storage.local.get({ blocklists: [] }, localResult => {
-        resolve({ ...syncResult, blocklists: localResult.blocklists });
+      chrome.storage.local.get(localDefaults, localResult => {
+        resolve({ ...syncResult, ...localResult });
       });
     });
   });
 }
 
 export async function setSetting(key, value) {
-  if (key === 'blocklists') {
+  if (LOCAL_KEYS.has(key)) {
     return new Promise(resolve => chrome.storage.local.set({ [key]: value }, resolve));
   }
   return new Promise(resolve => chrome.storage.sync.set({ [key]: value }, resolve));
