@@ -21,6 +21,9 @@ const CONTENT_RULE_ID_JS_CSP     = 8;
 // Blocking rules start at ID 100
 const BLOCK_RULE_ID_START = 100;
 
+// Own API domain — excluded from privacy header rules and proxy
+const API_DOMAIN = 'vallanx.com';
+
 // ─── Privacy Headers ───────────────────────────────────────────────────────
 
 async function initPrivacyHeaders() {
@@ -34,7 +37,7 @@ async function initPrivacyHeaders() {
     .filter(([, v]) => v.dntEnabled === true).map(([d]) => d);
 
   if (settings.dntEnabled) {
-    const condition = { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'] };
+    const condition = { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'], excludedRequestDomains: [API_DOMAIN] };
     if (dntOverrideOff.length > 0) condition.excludedInitiatorDomains = dntOverrideOff;
     rules.push({
       id: PRIVACY_RULE_ID_DNT,
@@ -62,7 +65,8 @@ async function initPrivacyHeaders() {
       },
       condition: {
         resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'],
-        initiatorDomains: dntOverrideOn
+        initiatorDomains: dntOverrideOn,
+        excludedRequestDomains: [API_DOMAIN]
       }
     });
   }
@@ -75,7 +79,7 @@ async function initPrivacyHeaders() {
         type: 'modifyHeaders',
         requestHeaders: [{ header: 'User-Agent', operation: 'set', value: settings.userAgentString }]
       },
-      condition: { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'] }
+      condition: { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'], excludedRequestDomains: [API_DOMAIN] }
     });
   }
 
@@ -87,7 +91,7 @@ async function initPrivacyHeaders() {
         type: 'modifyHeaders',
         requestHeaders: [{ header: 'X-Forwarded-For', operation: 'set', value: settings.ipHeaderValue }]
       },
-      condition: { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'] }
+      condition: { resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest'], excludedRequestDomains: [API_DOMAIN] }
     });
   }
 
@@ -313,7 +317,7 @@ async function applyProxy() {
               host: s.proxyHost,
               port: parseInt(s.proxyPort)
             },
-            bypassList: ['localhost', '127.0.0.1']
+            bypassList: ['localhost', '127.0.0.1', API_DOMAIN]
           }
         },
         scope: 'regular'

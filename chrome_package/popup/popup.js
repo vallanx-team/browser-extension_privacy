@@ -119,19 +119,21 @@ async function addToLocalBlacklist(url) {
 
 async function reportSuspicious() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.url) return;
   const btn = document.getElementById('btn-report');
   btn.disabled = true;
   try {
-    await fetch('https://vallanx.com/listener/suspicious_content', {
+    const res = await fetch('https://vallanx.com/listener/suspicious_content', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ URL: tab.url, 'User-IP': '', sourcetype: 'browser_extension' })
     });
-    await addToLocalBlacklist(tab.url);
+    if (!res.ok) throw new Error(res.status);
     btn.textContent = t('reportSent');
   } catch {
     btn.textContent = t('reportError');
   }
+  addToLocalBlacklist(tab.url).catch(() => {});
 }
 
 init();
